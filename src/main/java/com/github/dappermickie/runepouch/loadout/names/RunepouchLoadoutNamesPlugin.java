@@ -46,9 +46,20 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 	@Inject
 	private ChatboxPanelManager chatboxPanelManager;
+
 	private static final String LOADOUT_PROMPT_FORMAT = "%s<br>" +
 		ColorUtil.prependColorTag("(Limit %s Characters)", new Color(0, 0, 170));
 	private int lastRunepouchVarbitValue = 0;
+
+	private static final String loadOptionPrefix = "Load ";
+	private static final String loadoutPrefix = "Loadout ";
+	private static final String renameOptionPrefix = "Rename ";
+	private static final String loadoutName = "Loadout";
+	private static final Set<Integer> resizableWidgets = Set.of(983068, 983070, 983072, 983074);
+	private static final int runepouchWidgetId = 983065;
+	private static final int runepouchLoadoutTextWidgetId = 983067;
+	private static final int runepouchVarbitId = 9727;
+	private static final String chatboxPromptTitle = "Loadout: ";
 
 	@Override
 	protected void shutDown() throws Exception
@@ -74,38 +85,28 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		switch (parentId)
 		{
 			case 983068:
-				List<MenuEntry> leftClickMenus = new ArrayList<>(actions.length + 1);
-				firstEntry.setOption("Load " + getLoadoutName(1));
-				leftClickMenus.add(client.createMenuEntry(1)
-					.setOption("Rename " + getLoadoutName(1))
-					.setType(MenuAction.RUNELITE)
-					.onClick((MenuEntry e) -> renameLoadout(1)));
+				setLeftClickMenu(1, actions, firstEntry);
 				break;
 			case 983070:
-				leftClickMenus = new ArrayList<>(actions.length + 1);
-				firstEntry.setOption("Load " + getLoadoutName(2));
-				leftClickMenus.add(client.createMenuEntry(1)
-					.setOption("Rename " + getLoadoutName(2))
-					.setType(MenuAction.RUNELITE)
-					.onClick((MenuEntry e) -> renameLoadout(2)));
+				setLeftClickMenu(2, actions, firstEntry);
 				break;
 			case 983072:
-				leftClickMenus = new ArrayList<>(actions.length + 1);
-				firstEntry.setOption("Load " + getLoadoutName(3));
-				leftClickMenus.add(client.createMenuEntry(1)
-					.setOption("Rename " + getLoadoutName(3))
-					.setType(MenuAction.RUNELITE)
-					.onClick((MenuEntry e) -> renameLoadout(3)));
+				setLeftClickMenu(3, actions, firstEntry);
 				break;
 			case 983074:
-				leftClickMenus = new ArrayList<>(actions.length + 1);
-				firstEntry.setOption("Load " + getLoadoutName(4));
-				leftClickMenus.add(client.createMenuEntry(1)
-					.setOption("Rename " + getLoadoutName(4))
-					.setType(MenuAction.RUNELITE)
-					.onClick((MenuEntry e) -> renameLoadout(4)));
+				setLeftClickMenu(4, actions, firstEntry);
 				break;
 		}
+	}
+
+	private void setLeftClickMenu(int loadoutId, MenuEntry[] actions, MenuEntry firstEntry)
+	{
+		var leftClickMenus = new ArrayList<>(actions.length + 1);
+		firstEntry.setOption(loadOptionPrefix + getLoadoutName(loadoutId));
+		leftClickMenus.add(client.createMenuEntry(1)
+			.setOption(renameOptionPrefix + getLoadoutName(loadoutId))
+			.setType(MenuAction.RUNELITE)
+			.onClick((MenuEntry e) -> renameLoadout(loadoutId)));
 	}
 
 	private String getLoadoutName(int id)
@@ -114,8 +115,8 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 		if (loadoutName == null || loadoutName.isEmpty())
 		{
-			loadoutName = "Loadout " + id;
-			configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout."+ lastRunepouchVarbitValue + "."  + id, loadoutName);
+			loadoutName = loadoutPrefix + id;
+			configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id, loadoutName);
 		}
 
 		return loadoutName;
@@ -124,7 +125,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	private void renameLoadout(int id)
 	{
 		String oldLoadoutName = getLoadoutName(id);
-		chatboxPanelManager.openTextInput(String.format(LOADOUT_PROMPT_FORMAT, "Loadout:", 40))
+		chatboxPanelManager.openTextInput(String.format(LOADOUT_PROMPT_FORMAT, chatboxPromptTitle, 40))
 			.value(Strings.nullToEmpty(oldLoadoutName))
 			.onDone((newLoadoutName) ->
 			{
@@ -134,7 +135,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				}
 
 				newLoadoutName = Text.removeTags(newLoadoutName).trim();
-				configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout."+ lastRunepouchVarbitValue + "." +  id, newLoadoutName);
+				configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id, newLoadoutName);
 				clientThread.invokeLater(this::reloadRunepouchLoadout);
 			}).build();
 	}
@@ -142,7 +143,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	@Subscribe
 	public void onVarbitChanged(VarbitChanged event)
 	{
-		if (event.getVarbitId() == 9727)
+		if (event.getVarbitId() == runepouchVarbitId)
 		{
 			final int varbitValue = event.getValue();
 			if (varbitValue == 3 || varbitValue == 4)
@@ -155,9 +156,8 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 	private void resetRunepouchWidget()
 	{
-		final Set<Integer> resizableWidgets = Set.of(983068, 983070, 983072, 983074);
-		Widget runepouchWidget = client.getWidget(983065);
-		Widget runepouchLoadoutTextWidget = client.getWidget(983067);
+		Widget runepouchWidget = client.getWidget(runepouchWidgetId);
+		Widget runepouchLoadoutTextWidget = client.getWidget(runepouchLoadoutTextWidgetId);
 
 		runepouchLoadoutTextWidget.setHidden(false);
 
@@ -166,11 +166,9 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 			if (resizableWidgets.contains(row.getId()))
 			{
-				Widget child = null;
-
 				for (Widget column : row.getDynamicChildren())
 				{
-					if (column.getName().equals("Loadout"))
+					if (column.getName().equals(loadoutName))
 					{
 						column.setHidden(true);
 					}
@@ -190,9 +188,8 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	private void reloadRunepouchLoadout()
 	{
 		final int spaces = lastRunepouchVarbitValue;
-		final Set<Integer> resizableWidgets = Set.of(983068, 983070, 983072, 983074);
-		Widget runepouchWidget = client.getWidget(983065);
-		Widget runepouchLoadoutTextWidget = client.getWidget(983067);
+		Widget runepouchWidget = client.getWidget(runepouchWidgetId);
+		Widget runepouchLoadoutTextWidget = client.getWidget(runepouchLoadoutTextWidgetId);
 
 		runepouchLoadoutTextWidget.setHidden(true);
 
@@ -205,7 +202,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 				for (Widget column : row.getDynamicChildren())
 				{
-					if (column.getName().equals("Loadout"))
+					if (column.getName().equals(loadoutName))
 					{
 						child = column;
 					}
@@ -219,12 +216,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 							column.revalidate();
 
 							final int relativeX = column.getRelativeX();
-							int x = relativeX == 45 ? 55 :
-								relativeX == 55 ? 55 :
-									relativeX == 83 ? 103 :
-										relativeX == 103 ? 103 :
-											relativeX == 121 ? 151 :
-												relativeX == 151 ? 151 : 0;
+							int x = getNewXValue(relativeX);
 
 							column.setForcedPosition(x, 16);
 						}
@@ -242,7 +234,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				if (child == null)
 				{
 					child = row.createChild(4);
-					child.setName("Loadout");
+					child.setName(loadoutName);
 				}
 
 				switch (row.getId())
@@ -265,6 +257,16 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		}
 	}
 
+	private int getNewXValue(int relativeX)
+	{
+		return relativeX == 45 ? 55 :
+			relativeX == 55 ? 55 :
+				relativeX == 83 ? 103 :
+					relativeX == 103 ? 103 :
+						relativeX == 121 ? 151 :
+							relativeX == 151 ? 151 : 0;
+	}
+
 	private void LoadLoadout(int id, Widget loadoutWidget)
 	{
 		String loadoutName = getLoadoutName(id);
@@ -279,7 +281,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		loadoutWidget.setXTextAlignment(1);
 		loadoutWidget.setYTextAlignment(1);
 		loadoutWidget.setTextShadowed(true);
-		loadoutWidget.setTextColor(client.getWidget(983067).getTextColor());
+		loadoutWidget.setTextColor(client.getWidget(runepouchLoadoutTextWidgetId).getTextColor());
 		loadoutWidget.setHidden(false);
 		loadoutWidget.revalidate();
 	}
