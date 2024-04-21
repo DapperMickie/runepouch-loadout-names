@@ -13,6 +13,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.VarbitChanged;
@@ -290,5 +291,12 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	RunepouchLoadoutNamesConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(RunepouchLoadoutNamesConfig.class);
+	}
+
+	@Subscribe
+	public void onCommandExecuted(CommandExecuted event) {
+		if (event.getCommand().equals("resetrunepouchloadout")) {
+			clientThread.invoke(this::resetRunepouchWidget);
+		}
 	}
 }
