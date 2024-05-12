@@ -212,22 +212,22 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 					{
 						if (spaces == 3)
 						{
-							column.setOriginalWidth(26);
-							column.setOriginalHeight(20);
+							column.setOriginalWidth(33);
+							column.setOriginalHeight(26);
 							column.revalidate();
 
 							final int relativeX = column.getRelativeX();
 							int x = getNewXValue(relativeX);
 
-							column.setForcedPosition(x, 16);
+							column.setForcedPosition(x, 14);
 						}
 						else if (spaces == 4)
 						{
-							column.setOriginalWidth(26);
-							column.setOriginalHeight(20);
+							column.setOriginalWidth(33);
+							column.setOriginalHeight(26);
 							column.revalidate();
 
-							column.setForcedPosition(column.getRelativeX(), 16);
+							column.setForcedPosition(column.getRelativeX(), 14);
 						}
 					}
 				}
@@ -260,12 +260,27 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 	private int getNewXValue(int relativeX)
 	{
-		return relativeX == 45 ? 55 :
-			relativeX == 55 ? 55 :
-				relativeX == 83 ? 103 :
-					relativeX == 103 ? 103 :
-						relativeX == 121 ? 151 :
-							relativeX == 151 ? 151 : 0;
+		final int originalXForFirst = 38;
+		final int originalXForSecond = 76;
+		final int originalXForThird = 114;
+
+		final int newXForFirst = 50;
+		final int newXForSecond = 97;
+		final int newXForThird = 144;
+
+		if (relativeX == originalXForFirst || relativeX == newXForFirst)
+		{
+			return newXForFirst;
+		}
+		if (relativeX == originalXForSecond || relativeX == newXForSecond)
+		{
+			return newXForSecond;
+		}
+		if (relativeX == originalXForThird || relativeX == newXForThird)
+		{
+			return newXForThird;
+		}
+		return 0;
 	}
 
 	private void LoadLoadout(int id, Widget loadoutWidget)
@@ -273,10 +288,10 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		String loadoutName = getLoadoutName(id);
 
 		loadoutWidget.setText(loadoutName);
-		loadoutWidget.setOriginalHeight(20);
+		loadoutWidget.setOriginalHeight(12);
 		loadoutWidget.setOriginalWidth(150);
 		loadoutWidget.setPos(0, 0);
-		loadoutWidget.setFontId(495);
+		loadoutWidget.setFontId(1444);
 		loadoutWidget.setXPositionMode(2);
 		loadoutWidget.setYPositionMode(0);
 		loadoutWidget.setXTextAlignment(1);
