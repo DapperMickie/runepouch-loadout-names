@@ -25,7 +25,7 @@ public interface RunepouchLoadoutNamesConfig extends Config
 		section = sectionSettings
 	)
 	default boolean hideRunePouchNames() {
-			return true;
+			return false;
 	}
 	
 	@ConfigItem(
