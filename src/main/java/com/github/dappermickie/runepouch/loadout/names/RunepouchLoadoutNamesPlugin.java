@@ -246,6 +246,8 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				loadoutNameWidget.setOriginalY(10);
 				loadoutNameWidget.setYTextAlignment(WidgetTextAlignment.TOP);
 				loadoutNameWidget.setHidden(false);
+				loadoutNameWidget.setHasListener(false);
+				loadoutNameWidget.clearActions();
 			}
 			
 			loadoutNameWidget.revalidate();
