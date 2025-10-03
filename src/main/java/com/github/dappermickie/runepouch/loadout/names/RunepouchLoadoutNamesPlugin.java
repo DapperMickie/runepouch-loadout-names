@@ -32,7 +32,8 @@ import net.runelite.client.util.Text;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Rune Pouch Loadouts"
+	name = "Rune Pouch Loadouts",
+	configName = "RunepouchLoadoutNamesPlugin"
 )
 public class RunepouchLoadoutNamesPlugin extends Plugin
 {
