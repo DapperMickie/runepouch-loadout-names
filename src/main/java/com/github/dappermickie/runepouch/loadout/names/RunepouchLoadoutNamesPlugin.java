@@ -79,6 +79,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		MenuEntry firstEntry = event.getFirstEntry();
 
 		Widget widget = firstEntry.getWidget();
+		if (widget == null) return;
 
 		var widgetId = widget.getId();
 
@@ -318,6 +319,8 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	public void onCommandExecuted(CommandExecuted event) {
 		if (event.getCommand().equals("resetrunepouchloadout")) {
 			clientThread.invoke(this::resetRunepouchWidget);
+		} else if (event.getCommand().equals("reloadrunepouchloadout")) {
+			clientThread.invoke(this::reloadRunepouchLoadout);
 		}
 	}
 }
