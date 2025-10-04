@@ -38,4 +38,23 @@ public interface RunepouchLoadoutNamesConfig extends Config
 	default boolean hideRunePouchLoadoutHeader() {
 			return true;
 	}
+	
+	@ConfigSection(
+		position = 1,
+		name = "Experimental",
+		description = "Experimental features that may not be stable",
+		closedByDefault = true
+	)
+	String sectionExperimental = "sectionExperimental";
+	
+	@ConfigItem(
+		position = 0,
+		keyName = "enableRunePouchIcons",
+		name = "Enable Load-outs Icons",
+		description = "",
+		section = sectionExperimental
+	)
+	default boolean enableRunePouchIcons() {
+			return false;
+	}
 }

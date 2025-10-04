@@ -10,12 +10,15 @@ import net.runelite.api.Client;
 import net.runelite.api.FontID;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.ScriptEvent;
 import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.WidgetPositionMode;
 import net.runelite.api.widgets.WidgetTextAlignment;
@@ -130,6 +133,20 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			.setTarget(getLoadoutName(loadoutId))
 			.setType(MenuAction.RUNELITE)
 			.onClick((MenuEntry e) -> renameLoadout(loadoutId)));
+
+		if (config.enableRunePouchIcons()) {
+			leftClickMenus.add(client.getMenu().createMenuEntry(1)
+				.setOption("Change")
+				.setTarget("Icon")
+				.setType(MenuAction.RUNELITE)
+				.onClick((MenuEntry e) -> changeLoadoutIcon(loadoutId)));
+
+			leftClickMenus.add(client.getMenu().createMenuEntry(1)
+				.setOption("Reset")
+				.setTarget("Icon")
+				.setType(MenuAction.RUNELITE)
+				.onClick((MenuEntry e) -> setLoadoutIcon(loadoutId, SpriteID.AccManIcons._6)));
+		}
 	}
 
 	private String getLoadoutName(int id)
@@ -152,14 +169,50 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			.value(Strings.nullToEmpty(oldLoadoutName))
 			.onDone((newLoadoutName) ->
 			{
-				if (newLoadoutName == null)
-				{
-					return;
-				}
+				if (newLoadoutName == null) return;
 
 				newLoadoutName = Text.removeTags(newLoadoutName).trim();
 				configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id, newLoadoutName);
 				clientThread.invokeLater(this::reloadRunepouchLoadout);
+			}).build();
+	}
+
+	private int getLoadoutIcon(int id)
+	{
+		String loadoutIcon = configManager.getRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon");
+
+		if (loadoutIcon == null || loadoutIcon.isEmpty())
+		{
+			loadoutIcon = String.valueOf(SpriteID.AccManIcons._6);
+			configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon", loadoutIcon);
+		}
+
+		return Integer.parseInt(loadoutIcon);
+	}
+
+	private void setLoadoutIcon(int id, int icon)
+	{
+		configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon", String.valueOf(icon));
+		clientThread.invokeLater(this::reloadRunepouchLoadout);
+	}
+
+	private void changeLoadoutIcon(int id)
+	{
+		int oldLoadoutIcon = getLoadoutIcon(id);
+		chatboxPanelManager.openTextInput(String.format("%s<br>", "Loadout Icon: "))
+			.value(Strings.nullToEmpty(String.valueOf(oldLoadoutIcon)))
+			.onDone((newLoadoutIconStr) ->
+			{
+				if (newLoadoutIconStr == null) return;
+
+				newLoadoutIconStr = Text.removeTags(newLoadoutIconStr).trim();
+
+				try {
+					var newLoadoutIcon = Integer.parseInt(newLoadoutIconStr);
+					setLoadoutIcon(id, newLoadoutIcon);
+				} catch (NumberFormatException e) {
+					setLoadoutIcon(id, SpriteID.AccManIcons._6);
+				}
 			}).build();
 	}
 
@@ -274,6 +327,66 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 					}
 					continue;
 				}
+			}
+
+			// All of this is to handle the icon changing when hovering
+			Widget loadButton = null;
+			for (var loadoutWidgetChild : loadoutWidget.getStaticChildren()) {
+				if (loadoutWidgetChild.getType() == WidgetType.LAYER) {
+					loadButton = loadoutWidgetChild;
+					break;
+				}
+			}
+
+			if (loadButton != null) {
+				var loadoutIcon = getLoadoutIcon(loadoutWidgetIndex + 1);
+
+				var loadButtonChildren = loadButton.getDynamicChildren();
+				final Widget loadButtonSprite = loadButtonChildren[loadButtonChildren.length - 1];
+				if (loadButtonSprite != null) {
+					loadButtonSprite.setSpriteId(loadoutIcon);
+
+					loadButtonSprite.setOpacity(50);
+					loadButtonSprite.revalidate();
+				}
+
+				var buttonElementOffset = 8;
+				
+				loadButton.setOnMouseLeaveListener((JavaScriptCallback) (ScriptEvent event) -> {
+					if (loadButtonSprite != null) {
+						loadButtonSprite.setSpriteId(loadoutIcon);
+						loadButtonSprite.setOpacity(50);
+						loadButtonSprite.revalidate();
+
+						var buttonElements = event.getSource().getDynamicChildren();
+						for (var buttonElement : buttonElements) {
+							if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
+							if (buttonElement.getSpriteId() >= (912 + buttonElementOffset) && buttonElement.getSpriteId() <= (920 + buttonElementOffset)) {
+								buttonElement.setSpriteId(buttonElement.getSpriteId() - buttonElementOffset);
+								buttonElement.setOpacity(0);
+								buttonElement.revalidate();
+							}
+						}
+					}
+				});
+				
+				loadButton.setOnMouseRepeatListener((JavaScriptCallback) (ScriptEvent event) -> {
+					if (loadButtonSprite != null) {
+						loadButtonSprite.setSpriteId(loadoutIcon);
+						loadButtonSprite.setOpacity(0);
+						loadButtonSprite.revalidate();
+
+						var buttonElements = event.getSource().getDynamicChildren();
+						for (var buttonElement : buttonElements) {
+							if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
+							if (buttonElement.getSpriteId() >= 912 && buttonElement.getSpriteId() <= 920) {
+								buttonElement.setSpriteId(buttonElement.getSpriteId() + buttonElementOffset);
+								buttonElement.setOpacity(50);
+								buttonElement.revalidate();
+							}
+						}
+					}
+				});
 			}
 
 			loadoutWidgetIndex++;
