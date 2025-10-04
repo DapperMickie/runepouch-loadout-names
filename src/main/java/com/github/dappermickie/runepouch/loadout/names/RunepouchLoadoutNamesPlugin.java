@@ -239,7 +239,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 				// Replace the rename button with the custom text
 				loadoutNameWidget.setType(WidgetType.TEXT);
-				loadoutNameWidget.setFontId(FontID.PLAIN_12);
+				loadoutNameWidget.setFontId(FontID.TAHOMA_11);
 				loadoutNameWidget.setTextColor(0xFF981F);
 				loadoutNameWidget.setTextShadowed(true);
 				loadoutNameWidget.setText(getLoadoutName(loadoutWidgetIndex + 1));
