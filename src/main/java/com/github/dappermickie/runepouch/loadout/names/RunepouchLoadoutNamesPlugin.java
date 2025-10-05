@@ -4,9 +4,6 @@ import com.google.common.base.Strings;
 import com.google.inject.Provides;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
@@ -58,8 +55,10 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	@Inject
 	private ChatboxPanelManager chatboxPanelManager;
 
+	private static final int DEFAULT_LOADOUT_ICON = SpriteID.AccManIcons._6;
 	private static final String LOADOUT_PROMPT_FORMAT = "%s<br>" +
 		ColorUtil.prependColorTag("(Limit %s Characters)", new Color(0, 0, 170));
+
 	private int lastRunepouchVarbitValue = 0;
 
 
@@ -188,7 +187,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 		if (loadoutIcon == null || loadoutIcon.isEmpty())
 		{
-			loadoutIcon = String.valueOf(SpriteID.AccManIcons._6);
+			loadoutIcon = String.valueOf(DEFAULT_LOADOUT_ICON);
 			configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon", loadoutIcon);
 		}
 
@@ -205,12 +204,13 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	{
 		chatboxPanelManager.close();
 
-		setLoadoutIcon(id, SpriteID.AccManIcons._6);
+		setLoadoutIcon(id, DEFAULT_LOADOUT_ICON);
 	}
 
 	private void changeLoadoutIcon(int id)
 	{
-		new RunepouchLoadoutIconChatbox(chatboxPanelManager, client)
+		new RunepouchLoadoutIconChatbox(chatboxPanelManager, clientThread, client)
+			.currentSpriteID(getLoadoutIcon(id))
 			.onDone((spriteId) -> {
 				setLoadoutIcon(id, spriteId);
 			})
@@ -345,51 +345,53 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				var loadoutIcon = getLoadoutIcon(loadoutWidgetIndex + 1);
 
 				var loadButtonChildren = loadButton.getDynamicChildren();
-				final Widget loadButtonSprite = loadButtonChildren[loadButtonChildren.length - 1];
-				if (loadButtonSprite != null) {
-					loadButtonSprite.setSpriteId(loadoutIcon);
-
-					loadButtonSprite.setOpacity(50);
-					loadButtonSprite.revalidate();
-				}
-
-				var buttonElementOffset = 8;
-				
-				loadButton.setOnMouseLeaveListener((JavaScriptCallback) (ScriptEvent event) -> {
+				if (loadButtonChildren.length > 0) {
+					final Widget loadButtonSprite = loadButtonChildren[loadButtonChildren.length - 1];
 					if (loadButtonSprite != null) {
 						loadButtonSprite.setSpriteId(loadoutIcon);
+
 						loadButtonSprite.setOpacity(50);
 						loadButtonSprite.revalidate();
+					}
 
-						var buttonElements = event.getSource().getDynamicChildren();
-						for (var buttonElement : buttonElements) {
-							if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
-							if (buttonElement.getSpriteId() >= (912 + buttonElementOffset) && buttonElement.getSpriteId() <= (920 + buttonElementOffset)) {
-								buttonElement.setSpriteId(buttonElement.getSpriteId() - buttonElementOffset);
-								buttonElement.setOpacity(0);
-								buttonElement.revalidate();
+					var buttonElementOffset = 8;
+					
+					loadButton.setOnMouseLeaveListener((JavaScriptCallback) (ScriptEvent event) -> {
+						if (loadButtonSprite != null) {
+							loadButtonSprite.setSpriteId(loadoutIcon);
+							loadButtonSprite.setOpacity(50);
+							loadButtonSprite.revalidate();
+
+							var buttonElements = event.getSource().getDynamicChildren();
+							for (var buttonElement : buttonElements) {
+								if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
+								if (buttonElement.getSpriteId() >= (912 + buttonElementOffset) && buttonElement.getSpriteId() <= (920 + buttonElementOffset)) {
+									buttonElement.setSpriteId(buttonElement.getSpriteId() - buttonElementOffset);
+									buttonElement.setOpacity(0);
+									buttonElement.revalidate();
+								}
 							}
 						}
-					}
-				});
-				
-				loadButton.setOnMouseRepeatListener((JavaScriptCallback) (ScriptEvent event) -> {
-					if (loadButtonSprite != null) {
-						loadButtonSprite.setSpriteId(loadoutIcon);
-						loadButtonSprite.setOpacity(0);
-						loadButtonSprite.revalidate();
+					});
+					
+					loadButton.setOnMouseRepeatListener((JavaScriptCallback) (ScriptEvent event) -> {
+						if (loadButtonSprite != null) {
+							loadButtonSprite.setSpriteId(loadoutIcon);
+							loadButtonSprite.setOpacity(0);
+							loadButtonSprite.revalidate();
 
-						var buttonElements = event.getSource().getDynamicChildren();
-						for (var buttonElement : buttonElements) {
-							if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
-							if (buttonElement.getSpriteId() >= 912 && buttonElement.getSpriteId() <= 920) {
-								buttonElement.setSpriteId(buttonElement.getSpriteId() + buttonElementOffset);
-								buttonElement.setOpacity(50);
-								buttonElement.revalidate();
+							var buttonElements = event.getSource().getDynamicChildren();
+							for (var buttonElement : buttonElements) {
+								if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
+								if (buttonElement.getSpriteId() >= 912 && buttonElement.getSpriteId() <= 920) {
+									buttonElement.setSpriteId(buttonElement.getSpriteId() + buttonElementOffset);
+									buttonElement.setOpacity(50);
+									buttonElement.revalidate();
+								}
 							}
 						}
-					}
-				});
+					});
+				}
 			}
 
 			loadoutWidgetIndex++;
