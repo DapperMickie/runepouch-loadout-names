@@ -8,6 +8,7 @@ import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.ScriptID;
+import net.runelite.client.util.ColorUtil;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.WidgetType;
 import net.runelite.api.widgets.WidgetPositionMode;
@@ -17,6 +18,7 @@ import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.FontID;
 import lombok.extern.slf4j.Slf4j;
 import java.util.function.Predicate;
+import java.awt.Color;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -27,7 +29,6 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
   @Inject
 	protected RunepouchLoadoutIconChatbox(ChatboxPanelManager chatboxPanelManager, ClientThread clientThread, Client client)
 	{
-		// super(chatboxPanelManager, clientThread);
 		this.chatboxPanelManager = chatboxPanelManager;
     this.client = client;
 	}
@@ -37,9 +38,9 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
 	private int currentSpriteID;
 	private int scrollY = 0;
 
-  private final int iconsPerRow = 14;
-  private final int iconSize = 24;
-  private final int iconSpacing = 10;
+  private final int iconsPerRow = 12;
+  private final int iconSize = 28;
+  private final int iconSpacing = 11;
 
 	public RunepouchLoadoutIconChatbox onDone(Consumer<Integer> onDone)
 	{
@@ -83,24 +84,24 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
   {
 		var container = chatboxPanelManager.getContainerWidget();
 		container.deleteAllChildren();
+
+		var prompt = ColorUtil.wrapWithColorTag("Search:", Color.BLACK);
 		
-		// client.setVarcIntValue(VarClientID.MESLAYERMODE, 14);
-		client.setVarcIntValue(VarClientID.MESLAYERMODE, 0);
-		client.runScript(ScriptID.CHAT_TEXT_INPUT_REBUILD, "Search:");
+		client.setVarcIntValue(VarClientID.MESLAYERMODE, 14);
+		client.runScript(ScriptID.CHAT_TEXT_INPUT_REBUILD, prompt);
 		
 		var text = client.getWidget(InterfaceID.Chatbox.MES_TEXT2);
-		text.setFontId(FontID.PLAIN_12);
+		text.setFontId(FontID.BOLD_12);
 		text.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
 		text.setXPositionMode(WidgetPositionMode.ABSOLUTE_LEFT);
 		text.setOriginalX(0);
 		text.setOriginalY(0);
 		text.setWidthMode(WidgetSizeMode.MINUS);
 		text.setOriginalWidth(20);
-
 		text.setHidden(false);
 		text.setHasListener(true);
 		text.setOnKeyListener((JavaScriptCallback) (ScriptEvent event) -> {
-			client.runScript(112, event.getTypedKeyCode(), event.getTypedKeyChar(), "Search:");
+			client.runScript(112, event.getTypedKeyCode(), event.getTypedKeyChar(), prompt);
 
 			update(client.getVarcStrValue(359));
 		});

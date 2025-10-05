@@ -183,6 +183,11 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 	private int getLoadoutIcon(int id)
 	{
+		if (!config.enableRunePouchIcons())
+		{
+			return DEFAULT_LOADOUT_ICON;
+		}
+
 		String loadoutIcon = configManager.getRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon");
 
 		if (loadoutIcon == null || loadoutIcon.isEmpty())
@@ -343,6 +348,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 			if (loadButton != null) {
 				var loadoutIcon = getLoadoutIcon(loadoutWidgetIndex + 1);
+				var isCustomLoadoutIcon = loadoutIcon != DEFAULT_LOADOUT_ICON;
 
 				var loadButtonChildren = loadButton.getDynamicChildren();
 				if (loadButtonChildren.length > 0) {
@@ -350,7 +356,14 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 					if (loadButtonSprite != null) {
 						loadButtonSprite.setSpriteId(loadoutIcon);
 
+						loadButtonSprite.setOriginalWidth(22);
+						loadButtonSprite.setOriginalHeight(22);
 						loadButtonSprite.setOpacity(50);
+						if (isCustomLoadoutIcon) {
+							loadButtonSprite.setOriginalWidth(28);
+							loadButtonSprite.setOriginalHeight(28);
+							loadButtonSprite.setOpacity(0);
+						}
 						loadButtonSprite.revalidate();
 					}
 
@@ -360,6 +373,9 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 						if (loadButtonSprite != null) {
 							loadButtonSprite.setSpriteId(loadoutIcon);
 							loadButtonSprite.setOpacity(50);
+							if (isCustomLoadoutIcon) {
+								loadButtonSprite.setOpacity(0);
+							}
 							loadButtonSprite.revalidate();
 
 							var buttonElements = event.getSource().getDynamicChildren();
