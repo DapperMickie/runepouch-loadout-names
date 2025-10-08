@@ -52,8 +52,6 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		ColorUtil.prependColorTag("(Limit %s Characters)", new Color(0, 0, 170));
 
 	private int lastRunepouchVarbitValue = 0;
-	private RunepouchLoadoutIconChatbox runepouchLoadoutIconChatboxWidget = null;
-
 
 	@Override
 	protected void startUp() throws Exception
@@ -75,12 +73,10 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	@Subscribe
 	public void onWidgetClosed(WidgetClosed event)
 	{
-			if (event.getGroupId() == InterfaceID.BANKMAIN || event.getGroupId() == InterfaceID.BANKSIDE)
-			{
-				if (runepouchLoadoutIconChatboxWidget != null) {
-					chatboxPanelManager.close();
-				}
-			}
+		if (event.getGroupId() == InterfaceID.BANKMAIN || event.getGroupId() == InterfaceID.BANKSIDE)
+		{
+			chatboxPanelManager.close();
+		}
 	}
 
 	@Subscribe
@@ -218,14 +214,10 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 	private void changeLoadoutIcon(int id)
 	{
-		runepouchLoadoutIconChatboxWidget = new RunepouchLoadoutIconChatbox(chatboxPanelManager, clientThread, client)
+		new RunepouchLoadoutIconChatbox(chatboxPanelManager, clientThread, client)
 			.currentSpriteID(getLoadoutIcon(id))
 			.onDone((spriteId) -> {
 				setLoadoutIcon(id, spriteId);
-				runepouchLoadoutIconChatboxWidget = null;
-			})
-			.onClose(() -> {
-				runepouchLoadoutIconChatboxWidget = null;
 			})
 			.build();
 	}
