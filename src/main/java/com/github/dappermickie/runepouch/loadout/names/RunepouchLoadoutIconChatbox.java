@@ -4,18 +4,18 @@ import javax.inject.Inject;
 import net.runelite.client.game.chatbox.ChatboxInput;
 import net.runelite.client.game.chatbox.ChatboxPanelManager;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.util.ColorUtil;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.ScriptID;
-import net.runelite.client.util.ColorUtil;
 import net.runelite.api.Client;
+import net.runelite.api.ScriptEvent;
+import net.runelite.api.FontID;
 import net.runelite.api.widgets.WidgetType;
 import net.runelite.api.widgets.WidgetPositionMode;
 import net.runelite.api.widgets.WidgetSizeMode;
-import net.runelite.api.ScriptEvent;
 import net.runelite.api.widgets.JavaScriptCallback;
-import net.runelite.api.FontID;
 import lombok.extern.slf4j.Slf4j;
 import java.util.function.Predicate;
 import java.awt.Color;
@@ -120,7 +120,7 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
 		closeButton.revalidate();
 
 		var closeIcon = client.getWidget(InterfaceID.Chatbox.CLOSE_ICON);
-		closeIcon.setSpriteId(SpriteID.CloseButtonsV2.BUTTON);
+		closeIcon.setSpriteId(SpriteID.V2StoneCloseButton.BUTTON);
 		closeIcon.setWidthMode(WidgetSizeMode.MINUS);
 		closeIcon.setHeightMode(WidgetSizeMode.MINUS);
 		closeIcon.setOriginalWidth(0);
@@ -131,11 +131,11 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
 		closeIcon.setOriginalY(0);
 		closeIcon.setHasListener(true);
 		closeIcon.setOnMouseOverListener((JavaScriptCallback) (ScriptEvent event) -> {
-			closeIcon.setSpriteId(SpriteID.CloseButtonsV2.HOVERED);
+			closeIcon.setSpriteId(SpriteID.V2StoneCloseButton.HOVERED);
 			closeIcon.revalidate();
 		});
 		closeIcon.setOnMouseLeaveListener((JavaScriptCallback) (ScriptEvent event) -> {
-			closeIcon.setSpriteId(SpriteID.CloseButtonsV2.BUTTON);
+			closeIcon.setSpriteId(SpriteID.V2StoneCloseButton.BUTTON);
 			closeIcon.revalidate();
 		});
 		closeIcon.revalidate();
