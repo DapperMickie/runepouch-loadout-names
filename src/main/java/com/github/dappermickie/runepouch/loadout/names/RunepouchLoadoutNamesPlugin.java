@@ -15,6 +15,7 @@ import net.runelite.api.ScriptEvent;
 import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.WidgetClosed;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
@@ -40,26 +41,18 @@ import net.runelite.client.util.Text;
 )
 public class RunepouchLoadoutNamesPlugin extends Plugin
 {
-	@Inject
-	private Client client;
-
-	@Inject
-	private RunepouchLoadoutNamesConfig config;
-
-	@Inject
-	private ClientThread clientThread;
-
-	@Inject
-	private ConfigManager configManager;
-
-	@Inject
-	private ChatboxPanelManager chatboxPanelManager;
+	@Inject private Client client;
+	@Inject private RunepouchLoadoutNamesConfig config;
+	@Inject private ClientThread clientThread;
+	@Inject private ConfigManager configManager;
+	@Inject private ChatboxPanelManager chatboxPanelManager;
 
 	private static final int DEFAULT_LOADOUT_ICON = SpriteID.AccManIcons._6;
 	private static final String LOADOUT_PROMPT_FORMAT = "%s<br>" +
 		ColorUtil.prependColorTag("(Limit %s Characters)", new Color(0, 0, 170));
 
 	private int lastRunepouchVarbitValue = 0;
+	private RunepouchLoadoutIconChatbox runepouchLoadoutIconChatboxWidget = null;
 
 
 	@Override
@@ -77,6 +70,17 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	protected void shutDown() throws Exception
 	{
 		clientThread.invokeLater(this::resetRunepouchWidget);
+	}
+
+	@Subscribe
+	public void onWidgetClosed(WidgetClosed event)
+	{
+			if (event.getGroupId() == InterfaceID.BANKMAIN || event.getGroupId() == InterfaceID.BANKSIDE)
+			{
+				if (runepouchLoadoutIconChatboxWidget != null) {
+					chatboxPanelManager.close();
+				}
+			}
 	}
 
 	@Subscribe
@@ -214,10 +218,14 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 	private void changeLoadoutIcon(int id)
 	{
-		new RunepouchLoadoutIconChatbox(chatboxPanelManager, clientThread, client)
+		runepouchLoadoutIconChatboxWidget = new RunepouchLoadoutIconChatbox(chatboxPanelManager, clientThread, client)
 			.currentSpriteID(getLoadoutIcon(id))
 			.onDone((spriteId) -> {
 				setLoadoutIcon(id, spriteId);
+				runepouchLoadoutIconChatboxWidget = null;
+			})
+			.onClose(() -> {
+				runepouchLoadoutIconChatboxWidget = null;
 			})
 			.build();
 	}
