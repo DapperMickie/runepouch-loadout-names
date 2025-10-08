@@ -30,7 +30,7 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
 	protected RunepouchLoadoutIconChatbox(ChatboxPanelManager chatboxPanelManager, ClientThread clientThread, Client client)
 	{
 		this.chatboxPanelManager = chatboxPanelManager;
-    this.client = client;
+		this.client = client;
 	}
 
   private Predicate<Integer> onDone;
@@ -213,6 +213,7 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
 				if (onDone != null) {
 					onDone.test(spriteId);
 				}
+				// LATER: Could change so chatbox stays open and selected sprite is updated
 				// currentSpriteID(spriteId);
 				// update(searchText);
 				chatboxPanelManager.close();
