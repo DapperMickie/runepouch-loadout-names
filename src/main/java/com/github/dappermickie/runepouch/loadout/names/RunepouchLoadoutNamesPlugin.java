@@ -50,6 +50,8 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	private static final int DEFAULT_LOADOUT_ICON = SpriteID.AccManIcons._6;
 	private static final String LOADOUT_PROMPT_FORMAT = "%s<br>" +
 		ColorUtil.prependColorTag("(Limit %s Characters)", new Color(0, 0, 170));
+	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START = 912;
+	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END = 920;
 
 	private int lastRunepouchVarbitValue = 0;
 
@@ -381,7 +383,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 							var buttonElements = event.getSource().getDynamicChildren();
 							for (var buttonElement : buttonElements) {
 								if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
-								if (buttonElement.getSpriteId() >= (912 + buttonElementOffset) && buttonElement.getSpriteId() <= (920 + buttonElementOffset)) {
+								if (buttonElement.getSpriteId() >= (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START + buttonElementOffset) && buttonElement.getSpriteId() <= (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END + buttonElementOffset)) {
 									buttonElement.setSpriteId(buttonElement.getSpriteId() - buttonElementOffset);
 									buttonElement.setOpacity(0);
 									buttonElement.revalidate();
@@ -399,7 +401,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 							var buttonElements = event.getSource().getDynamicChildren();
 							for (var buttonElement : buttonElements) {
 								if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
-								if (buttonElement.getSpriteId() >= 912 && buttonElement.getSpriteId() <= 920) {
+								if (buttonElement.getSpriteId() >= RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START && buttonElement.getSpriteId() <= RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END) {
 									buttonElement.setSpriteId(buttonElement.getSpriteId() + buttonElementOffset);
 									buttonElement.setOpacity(50);
 									buttonElement.revalidate();

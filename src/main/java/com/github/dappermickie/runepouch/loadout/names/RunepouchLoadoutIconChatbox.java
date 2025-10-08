@@ -101,9 +101,12 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
 		text.setHidden(false);
 		text.setHasListener(true);
 		text.setOnKeyListener((JavaScriptCallback) (ScriptEvent event) -> {
+			/**
+			 * @see https://github.com/runelite/cs2-scripts/blob/4f2c51ea8837d1bda36b17efc6913a8f2fe4c808/scripts/%5Bclientscript%2Cmeslayer_onkey%5D.cs2
+			 */
 			client.runScript(112, event.getTypedKeyCode(), event.getTypedKeyChar(), prompt);
 
-			update(client.getVarcStrValue(359));
+			update(client.getVarcStrValue(VarClientID.MESLAYERINPUT));
 		});
 		text.revalidate();
 
