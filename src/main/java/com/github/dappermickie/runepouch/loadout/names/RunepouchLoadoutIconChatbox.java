@@ -1,6 +1,5 @@
 package com.github.dappermickie.runepouch.loadout.names;
 
-import javax.inject.Inject;
 import net.runelite.client.game.chatbox.ChatboxInput;
 import net.runelite.client.game.chatbox.ChatboxPanelManager;
 import net.runelite.client.callback.ClientThread;
