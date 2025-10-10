@@ -175,7 +175,9 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			.value(Strings.nullToEmpty(oldLoadoutName))
 			.onDone((newLoadoutName) ->
 			{
-				if (newLoadoutName == null) return;
+				if (newLoadoutName == null) {
+					return;
+				}
 
 				newLoadoutName = Text.removeTags(newLoadoutName).trim();
 				configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id, newLoadoutName);
@@ -235,6 +237,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				lastRunepouchVarbitValue = varbitValue;
 				clientThread.invokeLater(this::reloadRunepouchLoadout);
 			} else if (varbitValue == 0) {
+				// 0 = bank container closed, so hide the icon chatbox
 				chatboxPanelManager.close();
 			}
 		}

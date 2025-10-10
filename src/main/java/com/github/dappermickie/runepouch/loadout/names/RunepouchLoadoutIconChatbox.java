@@ -26,7 +26,6 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
   private final ChatboxPanelManager chatboxPanelManager;
   private final Client client;
 
-  @Inject
 	protected RunepouchLoadoutIconChatbox(ChatboxPanelManager chatboxPanelManager, ClientThread clientThread, Client client)
 	{
 		this.chatboxPanelManager = chatboxPanelManager;

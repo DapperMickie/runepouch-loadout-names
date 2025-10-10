@@ -327,7 +327,7 @@ public class RunepouchLoadoutIcon {
       add(new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.CHAOS_ELEMENTAL, "Chaos Elemental"));
       add(new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.ARTIO_CALLISTO, "Artio Callisto"));
       add(new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.CALVARION_VETION, "Calvarion Vetion"));
-      add(new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.SPINDEL_VENENATIS, "Spinel Venenatis"));
+      add(new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.SPINDEL_VENENATIS, "Spindel Venenatis"));
       add(new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.CHAOS_FANATIC, "Chaos Fanatic"));
       add(new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.CRAZY_ARCHAEOLOGIST, "Crazy Archaeologist"));
       add(new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.DERANGED_ARCHAEOLOGIST, "Deranged Archaeologist"));
