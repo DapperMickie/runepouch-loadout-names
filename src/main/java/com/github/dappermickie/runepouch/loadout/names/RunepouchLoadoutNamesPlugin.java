@@ -16,6 +16,7 @@ import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetClosed;
+import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
@@ -155,6 +156,57 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
+	public void onMenuEntryAdded(MenuEntryAdded event)
+	{
+		var menuEntry = event.getMenuEntry();
+		var widget = menuEntry.getWidget();
+		if (widget == null) return;
+
+		var widgetId = widget.getId();
+
+		switch (widgetId)
+		{
+			case InterfaceID.Bankside.RUNEPOUCH_NAME_A:
+				setLoadoutTextMenu(1, menuEntry);
+				break;
+			case InterfaceID.Bankside.RUNEPOUCH_NAME_B:
+				setLoadoutTextMenu(2, menuEntry);
+				break;
+			case InterfaceID.Bankside.RUNEPOUCH_NAME_C:
+				setLoadoutTextMenu(3, menuEntry);
+				break;
+			case InterfaceID.Bankside.RUNEPOUCH_NAME_D:
+				setLoadoutTextMenu(4, menuEntry);
+				break;
+			case InterfaceID.Bankside.RUNEPOUCH_NAME_E:
+				setLoadoutTextMenu(5, menuEntry);
+				break;
+			case InterfaceID.Bankside.RUNEPOUCH_NAME_F:
+				setLoadoutTextMenu(6, menuEntry);
+				break;
+			case InterfaceID.Bankside.RUNEPOUCH_NAME_G:
+				setLoadoutTextMenu(7, menuEntry);
+				break;
+			case InterfaceID.Bankside.RUNEPOUCH_NAME_H:
+				setLoadoutTextMenu(8, menuEntry);
+				break;
+			case InterfaceID.Bankside.RUNEPOUCH_NAME_I:
+				setLoadoutTextMenu(9, menuEntry);
+				break;
+			case InterfaceID.Bankside.RUNEPOUCH_NAME_J:
+				setLoadoutTextMenu(10, menuEntry);
+				break;
+		}
+	}
+
+	private void setLoadoutTextMenu(int loadoutId, MenuEntry menuEntry)
+	{
+		menuEntry.setOption("Rename");
+		menuEntry.setType(MenuAction.CC_OP_LOW_PRIORITY);
+		menuEntry.setTarget(getLoadoutName(loadoutId));
+	}
+
 	private String getLoadoutName(int id)
 	{
 		String loadoutName = configManager.getRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id);
@@ -281,9 +333,11 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		runepouchLoadoutContainer.revalidate();
 
 		int loadoutRowHeight = 0;
-		int loadoutWidgetIndex = 0;
-		for (var loadoutWidget : runepouchLoadoutContainer.getStaticChildren())
+		var runepouchLoadoutContainerChildren = runepouchLoadoutContainer.getStaticChildren();
+		for (var loadoutWidgetIndex = 0; loadoutWidgetIndex < runepouchLoadoutContainerChildren.length; loadoutWidgetIndex++)
 		{
+			final int loadoutID = loadoutWidgetIndex + 1;
+			var loadoutWidget = runepouchLoadoutContainerChildren[loadoutWidgetIndex];
 			var loadoutNameWidget = client.getWidget(loadoutWidget.getId() + 1);
 			var loadoutNameWidgetHeight = loadoutNameWidget.getHeight();
 
@@ -308,13 +362,21 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				loadoutNameWidget.setFontId(FontID.TAHOMA_11);
 				loadoutNameWidget.setTextColor(0xFF981F);
 				loadoutNameWidget.setTextShadowed(true);
-				loadoutNameWidget.setText(getLoadoutName(loadoutWidgetIndex + 1));
+				loadoutNameWidget.setText(getLoadoutName(loadoutID));
 				loadoutNameWidget.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
 				loadoutNameWidget.setOriginalY(10);
 				loadoutNameWidget.setYTextAlignment(WidgetTextAlignment.TOP);
+				loadoutNameWidget.setXPositionMode(WidgetPositionMode.ABSOLUTE_LEFT);
 				loadoutNameWidget.setHidden(false);
-				loadoutNameWidget.setHasListener(false);
+				loadoutNameWidget.setHasListener(true);
 				loadoutNameWidget.clearActions();
+				loadoutNameWidget.setAction(0, "Rename");
+				loadoutNameWidget.setTargetVerb(getLoadoutName(loadoutID));
+				loadoutNameWidget.setOnOpListener((JavaScriptCallback) (ScriptEvent event) -> {
+					if (event.getOp() != 1) return;
+					renameLoadout(loadoutID);
+				});
+				loadoutNameWidget.revalidate();
 			}
 			
 			loadoutNameWidget.revalidate();
@@ -414,8 +476,6 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 					});
 				}
 			}
-
-			loadoutWidgetIndex++;
 		}
 
 		// Recalculate how far the container can scroll
