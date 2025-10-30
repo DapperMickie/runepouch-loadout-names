@@ -5,17 +5,22 @@ import com.google.inject.Provides;
 import java.awt.Color;
 import java.util.ArrayList;
 import javax.inject.Inject;
+
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.FontID;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
+import net.runelite.api.ScriptEvent;
 import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.WidgetClosed;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.WidgetPositionMode;
 import net.runelite.api.widgets.WidgetTextAlignment;
@@ -36,30 +41,19 @@ import net.runelite.client.util.Text;
 )
 public class RunepouchLoadoutNamesPlugin extends Plugin
 {
-	@Inject
-	private Client client;
+	@Inject private Client client;
+	@Inject private RunepouchLoadoutNamesConfig config;
+	@Inject private ClientThread clientThread;
+	@Inject private ConfigManager configManager;
+	@Inject private ChatboxPanelManager chatboxPanelManager;
 
-	@Inject
-	private RunepouchLoadoutNamesConfig config;
-
-	@Inject
-	private ClientThread clientThread;
-
-	@Inject
-	private ConfigManager configManager;
-
-	@Inject
-	private ChatboxPanelManager chatboxPanelManager;
-
+	private static final int DEFAULT_LOADOUT_ICON = SpriteID.AccManIcons._6;
 	private static final String LOADOUT_PROMPT_FORMAT = "%s<br>" +
 		ColorUtil.prependColorTag("(Limit %s Characters)", new Color(0, 0, 170));
-	private int lastRunepouchVarbitValue = 0;
+	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START = 912;
+	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END = 920;
 
-	@Override
-	protected void shutDown() throws Exception
-	{
-		clientThread.invokeLater(this::resetRunepouchWidget);
-	}
+	private int lastRunepouchVarbitValue = 0;
 
 	@Override
 	protected void startUp() throws Exception
@@ -70,6 +64,21 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				reloadRunepouchLoadout();
 			}
 		});
+	}
+
+	@Override
+	protected void shutDown() throws Exception
+	{
+		clientThread.invokeLater(this::resetRunepouchWidget);
+	}
+
+	@Subscribe
+	public void onWidgetClosed(WidgetClosed event)
+	{
+		if (event.getGroupId() == InterfaceID.BANKMAIN || event.getGroupId() == InterfaceID.BANKSIDE)
+		{
+			chatboxPanelManager.close();
+		}
 	}
 
 	@Subscribe
@@ -130,6 +139,20 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			.setTarget(getLoadoutName(loadoutId))
 			.setType(MenuAction.RUNELITE)
 			.onClick((MenuEntry e) -> renameLoadout(loadoutId)));
+
+		if (config.enableRunePouchIcons()) {
+			leftClickMenus.add(client.getMenu().createMenuEntry(1)
+				.setOption("Change")
+				.setTarget("Icon")
+				.setType(MenuAction.RUNELITE)
+				.onClick((MenuEntry e) -> changeLoadoutIcon(loadoutId)));
+
+			leftClickMenus.add(client.getMenu().createMenuEntry(1)
+				.setOption("Reset")
+				.setTarget("Icon")
+				.setType(MenuAction.RUNELITE)
+				.onClick((MenuEntry e) -> resetLoadoutIcon(loadoutId)));
+		}
 	}
 
 	private String getLoadoutName(int id)
@@ -152,8 +175,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			.value(Strings.nullToEmpty(oldLoadoutName))
 			.onDone((newLoadoutName) ->
 			{
-				if (newLoadoutName == null)
-				{
+				if (newLoadoutName == null) {
 					return;
 				}
 
@@ -161,6 +183,47 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id, newLoadoutName);
 				clientThread.invokeLater(this::reloadRunepouchLoadout);
 			}).build();
+	}
+
+	private int getLoadoutIcon(int id)
+	{
+		if (!config.enableRunePouchIcons())
+		{
+			return DEFAULT_LOADOUT_ICON;
+		}
+
+		String loadoutIcon = configManager.getRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon");
+
+		if (loadoutIcon == null || loadoutIcon.isEmpty())
+		{
+			loadoutIcon = String.valueOf(DEFAULT_LOADOUT_ICON);
+			configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon", loadoutIcon);
+		}
+
+		return Integer.parseInt(loadoutIcon);
+	}
+
+	private void setLoadoutIcon(int id, int icon)
+	{
+		configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon", String.valueOf(icon));
+		clientThread.invokeLater(this::reloadRunepouchLoadout);
+	}
+
+	private void resetLoadoutIcon(int id)
+	{
+		chatboxPanelManager.close();
+
+		setLoadoutIcon(id, DEFAULT_LOADOUT_ICON);
+	}
+
+	private void changeLoadoutIcon(int id)
+	{
+		new RunepouchLoadoutIconChatbox(chatboxPanelManager, clientThread, client)
+			.currentSpriteID(getLoadoutIcon(id))
+			.onDone((spriteId) -> {
+				setLoadoutIcon(id, spriteId);
+			})
+			.build();
 	}
 
 	@Subscribe
@@ -173,6 +236,9 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			{
 				lastRunepouchVarbitValue = varbitValue;
 				clientThread.invokeLater(this::reloadRunepouchLoadout);
+			} else if (varbitValue == 0) {
+				// 0 = bank container closed, so hide the icon chatbox
+				chatboxPanelManager.close();
 			}
 		}
 	}
@@ -273,6 +339,79 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 						loadoutRowHeight = loadoutRuneWidget.getHeight() + 2;
 					}
 					continue;
+				}
+			}
+
+			// All of this is to handle the icon changing when hovering
+			Widget loadButton = null;
+			for (var loadoutWidgetChild : loadoutWidget.getStaticChildren()) {
+				if (loadoutWidgetChild.getType() == WidgetType.LAYER) {
+					loadButton = loadoutWidgetChild;
+					break;
+				}
+			}
+
+			if (loadButton != null) {
+				var loadoutIcon = getLoadoutIcon(loadoutWidgetIndex + 1);
+				var isCustomLoadoutIcon = loadoutIcon != DEFAULT_LOADOUT_ICON;
+
+				var loadButtonChildren = loadButton.getDynamicChildren();
+				if (loadButtonChildren.length > 0) {
+					final Widget loadButtonSprite = loadButtonChildren[loadButtonChildren.length - 1];
+					if (loadButtonSprite != null) {
+						loadButtonSprite.setSpriteId(loadoutIcon);
+
+						loadButtonSprite.setOriginalWidth(22);
+						loadButtonSprite.setOriginalHeight(22);
+						loadButtonSprite.setOpacity(50);
+						if (isCustomLoadoutIcon) {
+							loadButtonSprite.setOriginalWidth(28);
+							loadButtonSprite.setOriginalHeight(28);
+							loadButtonSprite.setOpacity(0);
+						}
+						loadButtonSprite.revalidate();
+					}
+
+					var buttonElementOffset = 8;
+					
+					loadButton.setOnMouseLeaveListener((JavaScriptCallback) (ScriptEvent event) -> {
+						if (loadButtonSprite != null) {
+							loadButtonSprite.setSpriteId(loadoutIcon);
+							loadButtonSprite.setOpacity(50);
+							if (isCustomLoadoutIcon) {
+								loadButtonSprite.setOpacity(0);
+							}
+							loadButtonSprite.revalidate();
+
+							var buttonElements = event.getSource().getDynamicChildren();
+							for (var buttonElement : buttonElements) {
+								if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
+								if (buttonElement.getSpriteId() >= (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START + buttonElementOffset) && buttonElement.getSpriteId() <= (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END + buttonElementOffset)) {
+									buttonElement.setSpriteId(buttonElement.getSpriteId() - buttonElementOffset);
+									buttonElement.setOpacity(0);
+									buttonElement.revalidate();
+								}
+							}
+						}
+					});
+					
+					loadButton.setOnMouseRepeatListener((JavaScriptCallback) (ScriptEvent event) -> {
+						if (loadButtonSprite != null) {
+							loadButtonSprite.setSpriteId(loadoutIcon);
+							loadButtonSprite.setOpacity(0);
+							loadButtonSprite.revalidate();
+
+							var buttonElements = event.getSource().getDynamicChildren();
+							for (var buttonElement : buttonElements) {
+								if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
+								if (buttonElement.getSpriteId() >= RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START && buttonElement.getSpriteId() <= RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END) {
+									buttonElement.setSpriteId(buttonElement.getSpriteId() + buttonElementOffset);
+									buttonElement.setOpacity(50);
+									buttonElement.revalidate();
+								}
+							}
+						}
+					});
 				}
 			}
 
