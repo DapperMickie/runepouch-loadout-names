@@ -53,8 +53,8 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	private static final int DEFAULT_LOADOUT_ICON = SpriteID.AccManIcons._6;
 	private static final String LOADOUT_PROMPT_FORMAT = "%s<br>" +
 		ColorUtil.prependColorTag("(Limit %s Characters)", new Color(0, 0, 170));
-	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START = 912;
-	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END = 920;
+	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START = SpriteID.V2StoneButton.TOP_LEFT -1;
+	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END = SpriteID.V2StoneButton.BOTTOM +1;
 
 	private static final int[] LOADOUT_INTERFACE_IDS = {
 		InterfaceID.Bankside.RUNEPOUCH_LOADOUT_A,
@@ -69,7 +69,20 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		InterfaceID.Bankside.RUNEPOUCH_LOADOUT_J,
 	};
 
-	private static final Map<Integer, Integer> LOAD_INTERFACE_IDS = new HashMap<Integer, Integer>() {{
+	private static final int[] LOAD_INTERFACE_IDS = {
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_A,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_B,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_C,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_D,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_E,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_F,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_G,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_H,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_I,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_J,
+	};
+
+	private static final Map<Integer, Integer> LOAD_INTERFACE_ID_MAP = new HashMap<Integer, Integer>() {{
 		put(InterfaceID.Bankside.RUNEPOUCH_LOAD_A, 1);
 		put(InterfaceID.Bankside.RUNEPOUCH_LOAD_B, 2);
 		put(InterfaceID.Bankside.RUNEPOUCH_LOAD_C, 3);
@@ -80,6 +93,19 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		put(InterfaceID.Bankside.RUNEPOUCH_LOAD_H, 8);
 		put(InterfaceID.Bankside.RUNEPOUCH_LOAD_I, 9);
 		put(InterfaceID.Bankside.RUNEPOUCH_LOAD_J, 10);
+	}};
+
+	private static final Map<Integer, Integer> NAME_INTERFACE_ID_MAP = new HashMap<Integer, Integer>() {{
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_A, 1);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_B, 2);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_C, 3);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_D, 4);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_E, 5);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_F, 6);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_G, 7);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_H, 8);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_I, 9);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_J, 10);
 	}};
 
 
@@ -122,7 +148,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 		var widgetId = widget.getId();
 
-		var loadoutId = LOAD_INTERFACE_IDS.get(widgetId);
+		var loadoutId = LOAD_INTERFACE_ID_MAP.get(widgetId);
 		if (loadoutId == null) return;
 
 		setLeftClickMenu(loadoutId, actions, firstEntry);
@@ -165,39 +191,10 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 		var widgetId = widget.getId();
 
-		switch (widgetId)
-		{
-			case InterfaceID.Bankside.RUNEPOUCH_NAME_A:
-				setLoadoutTextMenu(1, menuEntry);
-				break;
-			case InterfaceID.Bankside.RUNEPOUCH_NAME_B:
-				setLoadoutTextMenu(2, menuEntry);
-				break;
-			case InterfaceID.Bankside.RUNEPOUCH_NAME_C:
-				setLoadoutTextMenu(3, menuEntry);
-				break;
-			case InterfaceID.Bankside.RUNEPOUCH_NAME_D:
-				setLoadoutTextMenu(4, menuEntry);
-				break;
-			case InterfaceID.Bankside.RUNEPOUCH_NAME_E:
-				setLoadoutTextMenu(5, menuEntry);
-				break;
-			case InterfaceID.Bankside.RUNEPOUCH_NAME_F:
-				setLoadoutTextMenu(6, menuEntry);
-				break;
-			case InterfaceID.Bankside.RUNEPOUCH_NAME_G:
-				setLoadoutTextMenu(7, menuEntry);
-				break;
-			case InterfaceID.Bankside.RUNEPOUCH_NAME_H:
-				setLoadoutTextMenu(8, menuEntry);
-				break;
-			case InterfaceID.Bankside.RUNEPOUCH_NAME_I:
-				setLoadoutTextMenu(9, menuEntry);
-				break;
-			case InterfaceID.Bankside.RUNEPOUCH_NAME_J:
-				setLoadoutTextMenu(10, menuEntry);
-				break;
-		}
+		var loadoutId = NAME_INTERFACE_ID_MAP.get(widgetId);
+		if (loadoutId == null) return;
+
+		setLoadoutTextMenu(loadoutId, menuEntry);
 	}
 
 	private void setLoadoutTextMenu(int loadoutId, MenuEntry menuEntry)
@@ -409,9 +406,9 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			}
 		}
 
-		for (var loadEntry : LOAD_INTERFACE_IDS.entrySet()) {
-			int loadWidgetID = loadEntry.getKey();
-			int loadWidgetIndex = loadEntry.getValue();
+		for (int i = 0; i < LOAD_INTERFACE_IDS.length; i++) {
+			final int loadWidgetIndex = i + 1;
+			final int loadWidgetID = LOAD_INTERFACE_IDS[i];
 
 			// All of this is to handle the icon changing when hovering
 			Widget loadButton = client.getWidget(loadWidgetID);
@@ -449,7 +446,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 							var buttonElements = event.getSource().getDynamicChildren();
 							for (var buttonElement : buttonElements) {
 								if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
-								if (buttonElement.getSpriteId() >= (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START + buttonElementOffset) && buttonElement.getSpriteId() <= (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END + buttonElementOffset)) {
+								if (buttonElement.getSpriteId() >= (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START + buttonElementOffset) && buttonElement.getSpriteId() < (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END + buttonElementOffset)) {
 									buttonElement.setSpriteId(buttonElement.getSpriteId() - buttonElementOffset);
 									buttonElement.setOpacity(0);
 									buttonElement.revalidate();
@@ -467,7 +464,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 							var buttonElements = event.getSource().getDynamicChildren();
 							for (var buttonElement : buttonElements) {
 								if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
-								if (buttonElement.getSpriteId() >= RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START && buttonElement.getSpriteId() <= RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END) {
+								if (buttonElement.getSpriteId() >= RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START && buttonElement.getSpriteId() < RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END) {
 									buttonElement.setSpriteId(buttonElement.getSpriteId() + buttonElementOffset);
 									buttonElement.setOpacity(50);
 									buttonElement.revalidate();
