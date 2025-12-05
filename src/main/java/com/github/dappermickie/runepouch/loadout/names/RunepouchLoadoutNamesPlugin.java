@@ -18,7 +18,6 @@ import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetClosed;
-import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
@@ -95,20 +94,6 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		put(InterfaceID.Bankside.RUNEPOUCH_LOAD_J, 10);
 	}};
 
-	private static final Map<Integer, Integer> NAME_INTERFACE_ID_MAP = new HashMap<Integer, Integer>() {{
-		put(InterfaceID.Bankside.RUNEPOUCH_NAME_A, 1);
-		put(InterfaceID.Bankside.RUNEPOUCH_NAME_B, 2);
-		put(InterfaceID.Bankside.RUNEPOUCH_NAME_C, 3);
-		put(InterfaceID.Bankside.RUNEPOUCH_NAME_D, 4);
-		put(InterfaceID.Bankside.RUNEPOUCH_NAME_E, 5);
-		put(InterfaceID.Bankside.RUNEPOUCH_NAME_F, 6);
-		put(InterfaceID.Bankside.RUNEPOUCH_NAME_G, 7);
-		put(InterfaceID.Bankside.RUNEPOUCH_NAME_H, 8);
-		put(InterfaceID.Bankside.RUNEPOUCH_NAME_I, 9);
-		put(InterfaceID.Bankside.RUNEPOUCH_NAME_J, 10);
-	}};
-
-
 	private int lastRunepouchVarbitValue = 0;
 
 	@Override
@@ -148,10 +133,9 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 		var widgetId = widget.getId();
 
-		var loadoutId = LOAD_INTERFACE_ID_MAP.get(widgetId);
-		if (loadoutId == null) return;
-
-		setLeftClickMenu(loadoutId, actions, firstEntry);
+		var loadoutID = LOAD_INTERFACE_ID_MAP.get(widgetId);
+		if (loadoutID == null) return;
+		setLeftClickMenu(loadoutID, actions, firstEntry);
 	}
 
 	private void setLeftClickMenu(int loadoutId, MenuEntry[] actions, MenuEntry firstEntry)
@@ -180,28 +164,6 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				.setType(MenuAction.RUNELITE)
 				.onClick((MenuEntry e) -> resetLoadoutIcon(loadoutId)));
 		}
-	}
-
-	@Subscribe
-	public void onMenuEntryAdded(MenuEntryAdded event)
-	{
-		var menuEntry = event.getMenuEntry();
-		var widget = menuEntry.getWidget();
-		if (widget == null) return;
-
-		var widgetId = widget.getId();
-
-		var loadoutId = NAME_INTERFACE_ID_MAP.get(widgetId);
-		if (loadoutId == null) return;
-
-		setLoadoutTextMenu(loadoutId, menuEntry);
-	}
-
-	private void setLoadoutTextMenu(int loadoutId, MenuEntry menuEntry)
-	{
-		menuEntry.setOption("Rename");
-		menuEntry.setType(MenuAction.CC_OP_LOW_PRIORITY);
-		menuEntry.setTarget(getLoadoutName(loadoutId));
 	}
 
 	private String getLoadoutName(int id)
