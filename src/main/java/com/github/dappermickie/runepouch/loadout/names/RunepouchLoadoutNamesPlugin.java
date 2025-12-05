@@ -15,6 +15,7 @@ import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.ScriptEvent;
 import net.runelite.api.events.CommandExecuted;
+import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetClosed;
@@ -94,6 +95,20 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		put(InterfaceID.Bankside.RUNEPOUCH_LOAD_J, 10);
 	}};
 
+	private static final Map<Integer, Integer> NAME_INTERFACE_ID_MAP = new HashMap<Integer, Integer>() {{
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_A, 1);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_B, 2);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_C, 3);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_D, 4);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_E, 5);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_F, 6);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_G, 7);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_H, 8);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_I, 9);
+		put(InterfaceID.Bankside.RUNEPOUCH_NAME_J, 10);
+	}};
+
+
 	private int lastRunepouchVarbitValue = 0;
 
 	@Override
@@ -135,16 +150,35 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 		var loadoutID = LOAD_INTERFACE_ID_MAP.get(widgetId);
 		if (loadoutID == null) return;
-		setLeftClickMenu(loadoutID, actions, firstEntry);
+
+		setLoadMenuActions(loadoutID, actions);
 	}
 
-	private void setLeftClickMenu(int loadoutId, MenuEntry[] actions, MenuEntry firstEntry)
+	@Subscribe
+	public void onMenuEntryAdded(MenuEntryAdded event)
+	{
+		var menuEntry = event.getMenuEntry();
+		var widget = menuEntry.getWidget();
+		if (widget == null) return;
+
+		var widgetId = widget.getId();
+
+		var loadoutID = LOAD_INTERFACE_ID_MAP.get(widgetId);
+		if (loadoutID != null) {
+			setLoadMenuEntry(loadoutID, menuEntry);
+			return;
+		}
+
+		loadoutID = NAME_INTERFACE_ID_MAP.get(widgetId);
+		if (loadoutID != null) {
+			setRenameMenuEntry(loadoutID, menuEntry);
+			return;
+		}
+	}
+
+	private void setLoadMenuActions(int loadoutId, MenuEntry[] actions)
 	{
 		var leftClickMenus = new ArrayList<>(actions.length + 1);
-		firstEntry
-			.setOption("Load")
-			.setTarget(getLoadoutName(loadoutId));
-
 		leftClickMenus.add(client.getMenu().createMenuEntry(1)
 			.setOption("Rename")
 			.setTarget(getLoadoutName(loadoutId))
@@ -164,6 +198,20 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				.setType(MenuAction.RUNELITE)
 				.onClick((MenuEntry e) -> resetLoadoutIcon(loadoutId)));
 		}
+	}
+
+	private void setLoadMenuEntry(int loadoutId, MenuEntry menuEntry)
+	{
+		menuEntry
+			.setOption("Load")
+			.setTarget(getLoadoutName(loadoutId));
+	}
+
+	private void setRenameMenuEntry(int loadoutId, MenuEntry menuEntry)
+	{
+		menuEntry
+			.setOption("Rename")
+			.setTarget(getLoadoutName(loadoutId));
 	}
 
 	private String getLoadoutName(int id)
