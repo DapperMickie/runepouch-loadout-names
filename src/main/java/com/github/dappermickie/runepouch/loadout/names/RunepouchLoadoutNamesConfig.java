@@ -19,34 +19,23 @@ public interface RunepouchLoadoutNamesConfig extends Config
 	
 	@ConfigItem(
 		position = 0,
-		keyName = "hideRunePouchNames",
-		name = "Hide Loadout Names",
-		description = "",
+		keyName = "enableRunePouchNames",
+		name = "Enable Loadout Names",
+		description = "Allow typing custom names for loadouts",
 		section = sectionSettings
 	)
-	default boolean hideRunePouchNames() {
-			return false;
+	default boolean enableRunePouchNames() {
+			return true;
 	}	
 
 	@ConfigItem(
 		position = 1,
 		keyName = "enableRunePouchIcons",
 		name = "Enable Loadout Icons",
-		description = "",
+		description = "Show an icon in the load button",
 		section = sectionSettings
 	)
 	default boolean enableRunePouchIcons() {
-			return true;
-	}
-	
-	@ConfigItem(
-		position = 2,
-		keyName = "hideRunePouchLoadoutHeader",
-		name = "Hide Load-outs Header Text",
-		description = "",
-		section = sectionSettings
-	)
-	default boolean hideRunePouchLoadoutHeader() {
 			return true;
 	}
 }

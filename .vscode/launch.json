@@ -9,7 +9,7 @@
             "name": "Debug RuneLite Plugin",
             "request": "launch",
             "mainClass": "com.github.dappermickie.runepouch.loadout.names.RunepouchLoadoutNamesPluginTest",
-            "projectName": "runelite-runepouch-loadouts",
+            "projectName": "${workspaceFolderBasename}",
             "cwd": "${workspaceFolder}",
             "args": "--developer-mode --debug",
             "vmArgs": "-ea",
