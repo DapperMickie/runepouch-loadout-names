@@ -68,16 +68,16 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	}};
 
 	private static final List<Integer> LOAD_INTERFACE_IDS = new ArrayList<Integer>() {{
-		add(InterfaceID.Bankside.RUNEPOUCH_CONTENTS_TEXT1);
 		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_A);
 		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_B);
 		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_C);
-		add(InterfaceID.Bankside.PREPOT_DEVICE_LOADOUT_0_CONTENTS);
+		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_D);
 		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_E);
 		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_F);
 		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_G);
 		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_H);
 		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_I);
+		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_J);
 	}};
 
 	private int lastRunepouchVarbitValue = 0;
