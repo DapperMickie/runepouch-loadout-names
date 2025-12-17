@@ -55,16 +55,16 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END = SpriteID.V2StoneButton.BOTTOM +1;
 
 	private static final List<Integer> NAME_INTERFACE_IDS = new ArrayList<Integer>() {{
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_A);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_B);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_C);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_D);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_E);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_F);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_G);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_H);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_I);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_J);
+		add(InterfaceID.Bankside.RUNEPOUCH_NAME_A);
+		add(InterfaceID.Bankside.RUNEPOUCH_NAME_B);
+		add(InterfaceID.Bankside.RUNEPOUCH_NAME_C);
+		add(InterfaceID.Bankside.RUNEPOUCH_NAME_D);
+		add(InterfaceID.Bankside.RUNEPOUCH_NAME_E);
+		add(InterfaceID.Bankside.RUNEPOUCH_NAME_F);
+		add(InterfaceID.Bankside.RUNEPOUCH_NAME_G);
+		add(InterfaceID.Bankside.RUNEPOUCH_NAME_H);
+		add(InterfaceID.Bankside.RUNEPOUCH_NAME_I);
+		add(InterfaceID.Bankside.RUNEPOUCH_NAME_J);
 	}};
 
 	private static final List<Integer> LOAD_INTERFACE_IDS = new ArrayList<Integer>() {{
