@@ -54,31 +54,31 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START = SpriteID.V2StoneButton.TOP_LEFT -1;
 	private static final int RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END = SpriteID.V2StoneButton.BOTTOM +1;
 
-	private static final List<Integer> NAME_INTERFACE_IDS = new ArrayList<Integer>() {{
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_A);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_B);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_C);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_D);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_E);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_F);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_G);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_H);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_I);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOADOUT_J);
-	}};
+	private static final List<Integer> NAME_INTERFACE_IDS = List.of(
+		InterfaceID.Bankside.RUNEPOUCH_NAME_A,
+		InterfaceID.Bankside.RUNEPOUCH_NAME_B,
+		InterfaceID.Bankside.RUNEPOUCH_NAME_C,
+		InterfaceID.Bankside.RUNEPOUCH_NAME_D,
+		InterfaceID.Bankside.RUNEPOUCH_NAME_E,
+		InterfaceID.Bankside.RUNEPOUCH_NAME_F,
+		InterfaceID.Bankside.RUNEPOUCH_NAME_G,
+		InterfaceID.Bankside.RUNEPOUCH_NAME_H,
+		InterfaceID.Bankside.RUNEPOUCH_NAME_I,
+		InterfaceID.Bankside.RUNEPOUCH_NAME_J
+	);
 
-	private static final List<Integer> LOAD_INTERFACE_IDS = new ArrayList<Integer>() {{
-		add(InterfaceID.Bankside.RUNEPOUCH_CONTENTS_TEXT1);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_A);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_B);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_C);
-		add(InterfaceID.Bankside.PREPOT_DEVICE_LOADOUT_0_CONTENTS);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_E);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_F);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_G);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_H);
-		add(InterfaceID.Bankside.RUNEPOUCH_LOAD_I);
-	}};
+	private static final List<Integer> LOAD_INTERFACE_IDS = List.of(
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_A,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_B,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_C,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_D,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_E,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_F,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_G,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_H,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_I,
+		InterfaceID.Bankside.RUNEPOUCH_LOAD_J
+	);
 
 	private int lastRunepouchVarbitValue = 0;
 
