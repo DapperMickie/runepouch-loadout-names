@@ -270,6 +270,10 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 				// 0 = bank container closed, so hide the icon chatbox
 				chatboxPanelManager.close();
 			}
+		} else if (event.getVarbitId() == VarbitID.SETTINGS_RUNEPOUCH_LOADOUT_NAMES_DISABLED) {
+			var disableLoadoutNames = event.getValue() == 1 ? "true" : "false";
+			configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "hideRunePouchNames", disableLoadoutNames);
+			
 		}
 	}
 
@@ -278,6 +282,11 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	{
 		if (!event.getGroup().equals(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP)) return;
 
+		if (event.getKey().equals("hideRunePouchNames")) {
+			var disableLoadoutNames = event.getNewValue().equals("true") ? 1 : 0;
+			clientThread.invoke(() ->client.setVarbit(VarbitID.SETTINGS_RUNEPOUCH_LOADOUT_NAMES_DISABLED, disableLoadoutNames));
+		}
+		
 		clientThread.invokeLater(this::reloadRunepouchLoadout);
 	}
 

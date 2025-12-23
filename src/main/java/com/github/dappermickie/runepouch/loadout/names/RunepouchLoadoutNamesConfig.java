@@ -38,4 +38,22 @@ public interface RunepouchLoadoutNamesConfig extends Config
 	default boolean enableRunePouchIcons() {
 			return true;
 	}
+
+	@ConfigSection(
+		position = 1,
+		name = "Deprecated",
+		description = ""
+	)
+	String sectionDeprecated = "sectionDeprecated";
+
+	@ConfigItem(
+		position = 0,
+		keyName = "hideRunePouchNames",
+		name = "Hide Loadout Names",
+		description = "Moved to the Settings in-game",
+		section = sectionDeprecated
+	)
+	default boolean hideRunePouchNames() {
+			return false;
+	}
 }
