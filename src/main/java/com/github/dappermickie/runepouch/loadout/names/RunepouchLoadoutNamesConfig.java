@@ -48,9 +48,19 @@ public interface RunepouchLoadoutNamesConfig extends Config
 
 	@ConfigItem(
 		position = 0,
+		keyName = "readme",
+		name = "<html>Deprecated configuration options have<br>" +
+			"been moved to the in-game settings.</html>",
+		description = "",
+		section = sectionDeprecated
+	)
+	void readme();
+
+	@ConfigItem(
+		position = 0,
 		keyName = "hideRunePouchNames",
 		name = "Hide Loadout Names",
-		description = "Moved to the Settings in-game",
+		description = "",
 		section = sectionDeprecated
 	)
 	default boolean hideRunePouchNames() {
