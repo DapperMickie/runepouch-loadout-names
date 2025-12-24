@@ -157,26 +157,31 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			.onClick((MenuEntry e) -> renameLoadout(loadoutId)));
 
 		if (config.enableRunePouchIcons()) {
-			leftClickMenus.add(client.getMenu().createMenuEntry(1)
-				.setOption("Change")
-				.setTarget("Icon")
-				.setType(MenuAction.RUNELITE)
-				.onClick((MenuEntry e) -> changeLoadoutIcon(loadoutId, 0)));
-
-			if (getLoadoutIcon(loadoutId, 0) != DEFAULT_LOADOUT_ICON) {
-				leftClickMenus.add(client.getMenu().createMenuEntry(1)
-					.setOption("Layer")
-					.setTarget("Icon")
-					.setType(MenuAction.RUNELITE)
-					.onClick((MenuEntry e) -> changeLoadoutIcon(loadoutId, 1)));
-			}
-
-			leftClickMenus.add(client.getMenu().createMenuEntry(1)
-				.setOption("Reset")
-				.setTarget("Icon")
-				.setType(MenuAction.RUNELITE)
-				.onClick((MenuEntry e) -> resetLoadoutIcon(loadoutId)));
+			leftClickMenus.add(createIconMenu(loadoutId, 0));
+			leftClickMenus.add(createIconMenu(loadoutId, 1));
 		}
+	}
+
+	private MenuEntry createIconMenu(int loadoutId, int layer) {
+		var iconMenuEntry = client.getMenu().createMenuEntry(1)
+			.setOption("Change")
+			.setTarget("Icon " + (layer + 1))
+			.setType(MenuAction.RUNELITE)
+			.onClick((MenuEntry e) -> changeLoadoutIcon(loadoutId, layer));
+
+		var iconSubMenu = iconMenuEntry.createSubMenu();
+
+		iconSubMenu.createMenuEntry(-1)
+			.setOption("Reset")
+			.setType(MenuAction.RUNELITE)
+			.onClick((MenuEntry e) -> resetLoadoutIcon(loadoutId, layer));
+			
+		iconSubMenu.createMenuEntry(-1)
+			.setOption("Change")
+			.setType(MenuAction.RUNELITE)
+			.onClick((MenuEntry e) -> changeLoadoutIcon(loadoutId, layer));
+
+		return iconMenuEntry;
 	}
 
 	private void setLoadMenuEntry(int loadoutId, MenuEntry menuEntry)
@@ -254,12 +259,15 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		clientThread.invokeLater(this::reloadRunepouchLoadout);
 	}
 
-	private void resetLoadoutIcon(int id)
+	private void resetLoadoutIcon(int id, int layer)
 	{
 		chatboxPanelManager.close();
 
-		setLoadoutIcon(id, DEFAULT_LOADOUT_ICON, 0);
-		setLoadoutIcon(id, -1, 1);
+		if (layer == 0) {
+			setLoadoutIcon(id, DEFAULT_LOADOUT_ICON, 0);
+		} else if (layer == 1) {
+			setLoadoutIcon(id, -1, 1);
+		}
 	}
 
 	private void changeLoadoutIcon(int id, int layer)
