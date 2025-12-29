@@ -37,7 +37,7 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
 	private int scrollY = 0;
 
   private final int iconsPerRow = 12;
-  private final int iconSize = 28;
+	private final int iconSize = 28;
   private final int iconSpacing = 11;
 
 	public RunepouchLoadoutIconChatbox onDone(Consumer<Integer> onDone)
@@ -192,25 +192,10 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
 			if (currentSpriteID == spriteId) {
 				iconButtonHighlight.setOpacity(150);
 			}
-			iconButtonHighlight.revalidate();
-			
-			// Create icon button
-			var iconButton = scrollContents.createChild(-1, WidgetType.GRAPHIC);
-			iconButton.setSpriteId(spriteId);
-			iconButton.setWidthMode(WidgetSizeMode.ABSOLUTE);
-			iconButton.setHeightMode(WidgetSizeMode.ABSOLUTE);
-			iconButton.setOriginalWidth(iconSize);
-			iconButton.setOriginalHeight(iconSize);
-			iconButton.setXPositionMode(WidgetPositionMode.ABSOLUTE_LEFT);
-			iconButton.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
-			iconButton.setOriginalX(col * (iconSize + iconSpacing) + iconSpacing);
-			iconButton.setOriginalY(row * (iconSize + iconSpacing) + iconSpacing);
-			iconButton.setHasListener(true);
-			iconButton.setNoClickThrough(false);
-			iconButton.setNoScrollThrough(false);
-			iconButton.setAction(0, icon.name);
-			iconButton.setTargetVerb(String.valueOf(spriteId));
-			iconButton.setOnOpListener((JavaScriptCallback) (ScriptEvent event) -> {
+			iconButtonHighlight.setHasListener(true);
+			iconButtonHighlight.setAction(0, icon.name);
+			iconButtonHighlight.setTargetVerb(String.valueOf(spriteId));
+			iconButtonHighlight.setOnOpListener((JavaScriptCallback) (ScriptEvent event) -> {
 				if (onDone != null) {
 					onDone.test(spriteId);
 				}
@@ -219,13 +204,14 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
 				// update(searchText);
 				chatboxPanelManager.close();
 			});
+			iconButtonHighlight.revalidate();
 
 			// Add hover effect
-			iconButton.setOnMouseRepeatListener((JavaScriptCallback) (ScriptEvent event) -> {
+			iconButtonHighlight.setOnMouseRepeatListener((JavaScriptCallback) (ScriptEvent event) -> {
 				iconButtonHighlight.setOpacity(150);
 				iconButtonHighlight.revalidate();
 			});
-			iconButton.setOnMouseLeaveListener((JavaScriptCallback) (ScriptEvent event) -> {
+			iconButtonHighlight.setOnMouseLeaveListener((JavaScriptCallback) (ScriptEvent event) -> {
 				iconButtonHighlight.setOpacity(255);
 				if (currentSpriteID == spriteId) {
 					iconButtonHighlight.setOpacity(150);
@@ -233,6 +219,17 @@ public class RunepouchLoadoutIconChatbox extends ChatboxInput {
 				iconButtonHighlight.revalidate();
 			});
 			
+			// Create icon button
+			var iconButton = scrollContents.createChild(-1, WidgetType.GRAPHIC);
+			iconButton.setSpriteId(spriteId);
+			iconButton.setWidthMode(WidgetSizeMode.ABSOLUTE);
+			iconButton.setHeightMode(WidgetSizeMode.ABSOLUTE);
+			iconButton.setOriginalWidth(RunepouchLoadoutConst.CUSTOM_ICON_SIZE);
+			iconButton.setOriginalHeight(RunepouchLoadoutConst.CUSTOM_ICON_SIZE);
+			iconButton.setXPositionMode(WidgetPositionMode.ABSOLUTE_LEFT);
+			iconButton.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
+			iconButton.setOriginalX(col * (iconSize + iconSpacing) + iconSpacing);
+			iconButton.setOriginalY(row * (iconSize + iconSpacing) + iconSpacing);
 			iconButton.revalidate();
 		}
 	}

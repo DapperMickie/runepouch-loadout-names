@@ -436,7 +436,7 @@ public class RunepouchLoadoutIcon {
     new RunepouchLoadoutIcon(SpriteID.HeadiconsPkInterface._31, "Skulled Bounty Hunter Risk 4"),
     new RunepouchLoadoutIcon(SpriteID.HeadiconsPkInterface._32, "Skulled Bounty Hunter Risk 5"),
 
-    new RunepouchLoadoutIcon(SpriteID.CaTierSwords._0, "Combat Achievement Rank 1"),
+    new RunepouchLoadoutIcon(SpriteID.CaTierSwordsSmall._0, "Combat Achievement Rank 1"),
     new RunepouchLoadoutIcon(SpriteID.CaTierSwordsSmall._1, "Combat Achievement Rank 2"),
     new RunepouchLoadoutIcon(SpriteID.CaTierSwordsSmall._2, "Combat Achievement Rank 3"),
     new RunepouchLoadoutIcon(SpriteID.CaTierSwordsSmall._3, "Combat Achievement Rank 4"),

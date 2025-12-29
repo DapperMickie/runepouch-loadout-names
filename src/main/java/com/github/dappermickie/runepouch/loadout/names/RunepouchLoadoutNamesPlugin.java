@@ -348,8 +348,8 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 						loadButtonSprite.setOriginalHeight(22);
 						loadButtonSprite.setOpacity(50);
 						if (isCustomLoadoutIcon) {
-							loadButtonSprite.setOriginalWidth(28);
-							loadButtonSprite.setOriginalHeight(28);
+							loadButtonSprite.setOriginalWidth(RunepouchLoadoutConst.CUSTOM_ICON_SIZE);
+							loadButtonSprite.setOriginalHeight(RunepouchLoadoutConst.CUSTOM_ICON_SIZE);
 							loadButtonSprite.setOpacity(0);
 						}
 						loadButtonSprite.revalidate();
