@@ -159,6 +159,15 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		if (config.enableRunePouchIcons()) {
 			leftClickMenus.add(createIconMenu(loadoutId, 0));
 			leftClickMenus.add(createIconMenu(loadoutId, 1));
+
+			leftClickMenus.add(client.getMenu().createMenuEntry(1)
+				.setOption("Reset")
+				.setTarget("Icons")
+				.setType(MenuAction.RUNELITE)
+				.onClick((MenuEntry e) -> {
+					resetLoadoutIcon(loadoutId, 0);
+					resetLoadoutIcon(loadoutId, 1);
+				}));
 		}
 	}
 
@@ -172,7 +181,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		var iconSubMenu = iconMenuEntry.createSubMenu();
 
 		iconSubMenu.createMenuEntry(-1)
-			.setOption("Reset")
+			.setOption("Remove")
 			.setType(MenuAction.RUNELITE)
 			.onClick((MenuEntry e) -> resetLoadoutIcon(loadoutId, layer));
 			
@@ -366,32 +375,34 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 				var iconSprite = loadButton.createChild(9, WidgetType.GRAPHIC);
 				iconSprite.setSpriteId(loadoutIcon);
-				iconSprite.setOriginalWidth(22);
-				iconSprite.setOriginalHeight(22);
+				iconSprite.setOriginalWidth(RunepouchLoadoutConst.CUSTOM_ICON_LAYER_SIZE);
+				iconSprite.setOriginalHeight(RunepouchLoadoutConst.CUSTOM_ICON_LAYER_SIZE);
 				iconSprite.setXPositionMode(WidgetPositionMode.ABSOLUTE_LEFT);
 				iconSprite.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
-				iconSprite.setOriginalX(0);
-				iconSprite.setOriginalY(0);
+				iconSprite.setOriginalX(-1);
+				iconSprite.setOriginalY(-1);
 				iconSprite.setOpacity(isCustomLoadoutIcon ? 0 : 50);
 
 				if (!isCustomLoadoutIconLayer) {
 					iconSprite.setXPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
 					iconSprite.setYPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
+					iconSprite.setOriginalX(0);
+					iconSprite.setOriginalY(0);
 					if (isCustomLoadoutIcon) {
-						iconSprite.setOriginalWidth(28);
-						iconSprite.setOriginalHeight(28);
+						iconSprite.setOriginalWidth(RunepouchLoadoutConst.CUSTOM_ICON_SIZE);
+						iconSprite.setOriginalHeight(RunepouchLoadoutConst.CUSTOM_ICON_SIZE);
 					}
 				}
 				iconSprite.revalidate();
 
 				var layerSprite = loadButton.createChild(10, WidgetType.GRAPHIC);
 				layerSprite.setSpriteId(loadoutIconLayer);
-				layerSprite.setOriginalWidth(22);
-				layerSprite.setOriginalHeight(22);
+				layerSprite.setOriginalWidth(RunepouchLoadoutConst.CUSTOM_ICON_LAYER_SIZE);
+				layerSprite.setOriginalHeight(RunepouchLoadoutConst.CUSTOM_ICON_LAYER_SIZE);
 				layerSprite.setXPositionMode(WidgetPositionMode.ABSOLUTE_RIGHT);
 				layerSprite.setYPositionMode(WidgetPositionMode.ABSOLUTE_BOTTOM);
-				layerSprite.setOriginalX(0);
-				layerSprite.setOriginalY(0);
+				layerSprite.setOriginalX(-1);
+				layerSprite.setOriginalY(-1);
 				layerSprite.setOpacity(isCustomLoadoutIconLayer ? 0 : 50);
 				layerSprite.setHidden(!isCustomLoadoutIconLayer);
 				layerSprite.revalidate();
