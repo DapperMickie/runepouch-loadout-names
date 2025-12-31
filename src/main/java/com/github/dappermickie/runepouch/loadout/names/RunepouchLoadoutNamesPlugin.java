@@ -157,18 +157,40 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			.onClick((MenuEntry e) -> renameLoadout(loadoutId)));
 
 		if (config.enableRunePouchIcons()) {
-			leftClickMenus.add(client.getMenu().createMenuEntry(1)
-				.setOption("Change")
-				.setTarget("Icon")
-				.setType(MenuAction.RUNELITE)
-				.onClick((MenuEntry e) -> changeLoadoutIcon(loadoutId)));
+			leftClickMenus.add(createIconMenu(loadoutId, 0));
+			leftClickMenus.add(createIconMenu(loadoutId, 1));
 
 			leftClickMenus.add(client.getMenu().createMenuEntry(1)
 				.setOption("Reset")
-				.setTarget("Icon")
+				.setTarget("Icons")
 				.setType(MenuAction.RUNELITE)
-				.onClick((MenuEntry e) -> resetLoadoutIcon(loadoutId)));
+				.onClick((MenuEntry e) -> {
+					resetLoadoutIcon(loadoutId, 0);
+					resetLoadoutIcon(loadoutId, 1);
+				}));
 		}
+	}
+
+	private MenuEntry createIconMenu(int loadoutId, int layer) {
+		var iconMenuEntry = client.getMenu().createMenuEntry(1)
+			.setOption("Change")
+			.setTarget("Icon " + (layer + 1))
+			.setType(MenuAction.RUNELITE)
+			.onClick((MenuEntry e) -> changeLoadoutIcon(loadoutId, layer));
+
+		var iconSubMenu = iconMenuEntry.createSubMenu();
+
+		iconSubMenu.createMenuEntry(-1)
+			.setOption("Remove")
+			.setType(MenuAction.RUNELITE)
+			.onClick((MenuEntry e) -> resetLoadoutIcon(loadoutId, layer));
+			
+		iconSubMenu.createMenuEntry(-1)
+			.setOption("Change")
+			.setType(MenuAction.RUNELITE)
+			.onClick((MenuEntry e) -> changeLoadoutIcon(loadoutId, layer));
+
+		return iconMenuEntry;
 	}
 
 	private void setLoadMenuEntry(int loadoutId, MenuEntry menuEntry)
@@ -215,43 +237,54 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			}).build();
 	}
 
-	private int getLoadoutIcon(int id)
+	private int getLoadoutIcon(int id, int layer)
 	{
 		if (!config.enableRunePouchIcons())
 		{
 			return DEFAULT_LOADOUT_ICON;
 		}
 
-		String loadoutIcon = configManager.getRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon");
+		var iconStr = layer == 0 ? ".icon" : ".icon_" + layer;
+		String loadoutIcon = configManager.getRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + iconStr);
 
 		if (loadoutIcon == null || loadoutIcon.isEmpty())
 		{
 			loadoutIcon = String.valueOf(DEFAULT_LOADOUT_ICON);
-			configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon", loadoutIcon);
+			configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + iconStr, loadoutIcon);
 		}
 
 		return Integer.parseInt(loadoutIcon);
 	}
 
-	private void setLoadoutIcon(int id, int icon)
+	private void setLoadoutIcon(int id, int icon, int layer)
 	{
-		configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + ".icon", String.valueOf(icon));
+		var iconStr = layer == 0 ? ".icon" : ".icon_" + layer;
+
+		if (icon >= 0) {
+			configManager.setRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + iconStr, String.valueOf(icon));
+		} else {
+			configManager.unsetRSProfileConfiguration(RunepouchLoadoutNamesConfig.RUNEPOUCH_LOADOUT_CONFIG_GROUP, "runepouch.loadout." + lastRunepouchVarbitValue + "." + id + iconStr);
+		}
 		clientThread.invokeLater(this::reloadRunepouchLoadout);
 	}
 
-	private void resetLoadoutIcon(int id)
+	private void resetLoadoutIcon(int id, int layer)
 	{
 		chatboxPanelManager.close();
 
-		setLoadoutIcon(id, DEFAULT_LOADOUT_ICON);
+		if (layer == 0) {
+			setLoadoutIcon(id, DEFAULT_LOADOUT_ICON, 0);
+		} else if (layer == 1) {
+			setLoadoutIcon(id, -1, 1);
+		}
 	}
 
-	private void changeLoadoutIcon(int id)
+	private void changeLoadoutIcon(int id, int layer)
 	{
 		new RunepouchLoadoutIconChatbox(chatboxPanelManager, clientThread, client)
-			.currentSpriteID(getLoadoutIcon(id))
+			.currentSpriteID(getLoadoutIcon(id, layer))
 			.onDone((spriteId) -> {
-				setLoadoutIcon(id, spriteId);
+				setLoadoutIcon(id, spriteId, layer);
 			})
 			.build();
 	}
@@ -333,69 +366,97 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			final int loadWidgetIndex = i + 1;
 			final int loadWidgetID = LOAD_INTERFACE_IDS.get(i);
 
-			// All of this is to handle the icon changing when hovering
 			Widget loadButton = client.getWidget(loadWidgetID);
 			if (loadButton != null) {
-				var loadoutIcon = getLoadoutIcon(loadWidgetIndex);
+				var loadoutIcon = getLoadoutIcon(loadWidgetIndex, 0);
+				var loadoutIconLayer = getLoadoutIcon(loadWidgetIndex, 1);
 				var isCustomLoadoutIcon = loadoutIcon != DEFAULT_LOADOUT_ICON;
+				var isCustomLoadoutIconLayer = loadoutIconLayer != DEFAULT_LOADOUT_ICON;
 
-				var loadButtonChildren = loadButton.getDynamicChildren();
-				if (loadButtonChildren.length > 0) {
-					final Widget loadButtonSprite = loadButtonChildren[loadButtonChildren.length - 1];
-					if (loadButtonSprite != null) {
-						loadButtonSprite.setSpriteId(loadoutIcon);
-						loadButtonSprite.setOriginalWidth(22);
-						loadButtonSprite.setOriginalHeight(22);
-						loadButtonSprite.setOpacity(50);
-						if (isCustomLoadoutIcon) {
-							loadButtonSprite.setOriginalWidth(RunepouchLoadoutConst.CUSTOM_ICON_SIZE);
-							loadButtonSprite.setOriginalHeight(RunepouchLoadoutConst.CUSTOM_ICON_SIZE);
-							loadButtonSprite.setOpacity(0);
-						}
-						loadButtonSprite.revalidate();
+				var iconSprite = loadButton.createChild(9, WidgetType.GRAPHIC);
+				iconSprite.setSpriteId(loadoutIcon);
+				iconSprite.setOriginalWidth(RunepouchLoadoutConst.CUSTOM_ICON_LAYER_SIZE);
+				iconSprite.setOriginalHeight(RunepouchLoadoutConst.CUSTOM_ICON_LAYER_SIZE);
+				iconSprite.setXPositionMode(WidgetPositionMode.ABSOLUTE_LEFT);
+				iconSprite.setYPositionMode(WidgetPositionMode.ABSOLUTE_TOP);
+				iconSprite.setOriginalX(-1);
+				iconSprite.setOriginalY(-1);
+				iconSprite.setOpacity(isCustomLoadoutIcon ? 0 : 50);
+
+				if (!isCustomLoadoutIconLayer) {
+					iconSprite.setXPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
+					iconSprite.setYPositionMode(WidgetPositionMode.ABSOLUTE_CENTER);
+					iconSprite.setOriginalX(0);
+					iconSprite.setOriginalY(0);
+					if (isCustomLoadoutIcon) {
+						iconSprite.setOriginalWidth(RunepouchLoadoutConst.CUSTOM_ICON_SIZE);
+						iconSprite.setOriginalHeight(RunepouchLoadoutConst.CUSTOM_ICON_SIZE);
+					}
+				}
+				iconSprite.revalidate();
+
+				var layerSprite = loadButton.createChild(10, WidgetType.GRAPHIC);
+				layerSprite.setSpriteId(loadoutIconLayer);
+				layerSprite.setOriginalWidth(RunepouchLoadoutConst.CUSTOM_ICON_LAYER_SIZE);
+				layerSprite.setOriginalHeight(RunepouchLoadoutConst.CUSTOM_ICON_LAYER_SIZE);
+				layerSprite.setXPositionMode(WidgetPositionMode.ABSOLUTE_RIGHT);
+				layerSprite.setYPositionMode(WidgetPositionMode.ABSOLUTE_BOTTOM);
+				layerSprite.setOriginalX(-1);
+				layerSprite.setOriginalY(-1);
+				layerSprite.setOpacity(isCustomLoadoutIconLayer ? 0 : 50);
+				layerSprite.setHidden(!isCustomLoadoutIconLayer);
+				layerSprite.revalidate();
+
+				// All of this is to handle the icon changing when hovering
+				var buttonElementOffset = 8;
+		
+				loadButton.setOnMouseLeaveListener((JavaScriptCallback) (ScriptEvent event) -> {
+					if (iconSprite != null) {
+						iconSprite.setSpriteId(loadoutIcon);
+						iconSprite.setOpacity(isCustomLoadoutIcon ? 0 : 50);
+						iconSprite.revalidate();
 					}
 
-					var buttonElementOffset = 8;
-					
-					loadButton.setOnMouseLeaveListener((JavaScriptCallback) (ScriptEvent event) -> {
-						if (loadButtonSprite != null) {
-							loadButtonSprite.setSpriteId(loadoutIcon);
-							loadButtonSprite.setOpacity(50);
-							if (isCustomLoadoutIcon) {
-								loadButtonSprite.setOpacity(0);
-							}
-							loadButtonSprite.revalidate();
+					if (layerSprite != null) {
+						layerSprite.setSpriteId(loadoutIconLayer);
+						layerSprite.setOpacity(isCustomLoadoutIconLayer ? 0 : 50);
+						layerSprite.revalidate();
+					}
 
-							var buttonElements = event.getSource().getDynamicChildren();
-							for (var buttonElement : buttonElements) {
-								if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
-								if (buttonElement.getSpriteId() >= (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START + buttonElementOffset) && buttonElement.getSpriteId() < (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END + buttonElementOffset)) {
-									buttonElement.setSpriteId(buttonElement.getSpriteId() - buttonElementOffset);
-									buttonElement.setOpacity(0);
-									buttonElement.revalidate();
-								}
-							}
+					var buttonElements = event.getSource().getDynamicChildren();
+					for (var buttonElement : buttonElements) {
+						if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
+						if (buttonElement.getSpriteId() >= (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START + buttonElementOffset) && buttonElement.getSpriteId() < (RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END + buttonElementOffset)) {
+							buttonElement.setSpriteId(buttonElement.getSpriteId() - buttonElementOffset);
+							buttonElement.setOpacity(0);
+							buttonElement.revalidate();
 						}
-					});
-					
-					loadButton.setOnMouseRepeatListener((JavaScriptCallback) (ScriptEvent event) -> {
-						if (loadButtonSprite != null) {
-							loadButtonSprite.setSpriteId(loadoutIcon);
-							loadButtonSprite.setOpacity(0);
-							loadButtonSprite.revalidate();
+					}
+				});
+				
+				loadButton.setOnMouseRepeatListener((JavaScriptCallback) (ScriptEvent event) -> {
+					if (iconSprite != null) {
+						iconSprite.setSpriteId(loadoutIcon);
+						iconSprite.setOpacity(0);
+						iconSprite.revalidate();
+					}
 
-							var buttonElements = event.getSource().getDynamicChildren();
-							for (var buttonElement : buttonElements) {
-								if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
-								if (buttonElement.getSpriteId() >= RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START && buttonElement.getSpriteId() < RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END) {
-									buttonElement.setSpriteId(buttonElement.getSpriteId() + buttonElementOffset);
-									buttonElement.setOpacity(50);
-									buttonElement.revalidate();
-								}
-							}
+					if (layerSprite != null) {
+						layerSprite.setSpriteId(loadoutIconLayer);
+						layerSprite.setOpacity(0);
+						layerSprite.revalidate();
+					}
+
+					var buttonElements = event.getSource().getDynamicChildren();
+					for (var buttonElement : buttonElements) {
+						if (buttonElement.getType() != WidgetType.GRAPHIC) continue;
+						if (buttonElement.getSpriteId() >= RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_START && buttonElement.getSpriteId() < RUNEPOUCH_LOADOUT_ICON_BG_SPRITE_ID_END) {
+							buttonElement.setSpriteId(buttonElement.getSpriteId() + buttonElementOffset);
+							buttonElement.setOpacity(50);
+							buttonElement.revalidate();
 						}
-					});
-				}
+					}
+				});
 			}
 		}
 	}

@@ -22,3 +22,7 @@ Customize the loadout icon with the right click menu too.
 Choose one of many hand-picked icons.
 
 ![Rune Pouch loadouts icons selector](./docs/iconselector.png)
+
+Add a second icon for multi-purpose loadouts
+
+![Rune Pouch loadouts layered icons](./docs/layered_icons.png)
