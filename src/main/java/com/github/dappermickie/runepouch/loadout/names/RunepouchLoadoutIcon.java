@@ -339,6 +339,7 @@ public class RunepouchLoadoutIcon {
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.SCURRIUS, "Scurrius"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.SOL_HEREDIT, "Sol Heredit"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.LUNAR_CHESTS, "Lunar Chests"),
+    new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.MAGGOT_KING, "Maggot King"),
 
     new RunepouchLoadoutIcon(SpriteID.Staticons.ATTACK, "Attack"),
     new RunepouchLoadoutIcon(SpriteID.Staticons.STRENGTH, "Strength"),
