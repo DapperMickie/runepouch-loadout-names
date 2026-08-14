@@ -51,10 +51,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	@Inject private ChatboxPanelManager chatboxPanelManager;
 	@Inject private RunepouchLoadoutCompactManager compactManager;
 
-	// Package-visible (not private) so RunepouchLoadoutCompactManager can use
-	// the exact same sentinel for its own "is this icon set?" comparisons —
-	// both layouts read/write the same config keys, so they need to agree
-	// on what "unset" looks like.
+	// Package-visible so RunepouchLoadoutCompactManager shares the same "unset" sentinel.
 	static final int DEFAULT_LOADOUT_ICON = SpriteID.AccManIcons._6;
 	private static final String LOADOUT_PROMPT_FORMAT = "%s<br>" +
 		ColorUtil.prependColorTag("(Limit %s Characters)", new Color(0, 0, 170));
@@ -89,11 +86,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 
 	private int lastRunepouchVarbitValue = 0;
 
-	// Compact mode needs to know whether the panel is currently open so its
-	// PostClientTick/GameTick corrections (see onPostClientTick/onGameTick)
-	// don't run needlessly the rest of the time — the classic single-column
-	// layout below doesn't need this since it isn't fighting vanilla for
-	// continuous re-application the way compact mode is.
+	// Gates onPostClientTick/onGameTick so they only run while compact mode is on and the panel is open.
 	private boolean runepouchPanelOpen;
 
 	@Override
@@ -132,11 +125,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 		compactManager.suppressVanillaInterference();
 	}
 
-	// Picks up rune type/quantity edits the player just made through
-	// vanilla's own rune picker (clicks are forwarded there, so there's no
-	// direct callback when it saves). Real game ticks (600ms) are plenty
-	// responsive for that — it's not a hover-speed concern the way the
-	// flicker suppression above is, so this doesn't need PostClientTick.
+	// Picks up rune edits made through vanilla's own rune picker.
 	@Subscribe
 	public void onGameTick(GameTick event)
 	{
@@ -348,13 +337,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			{
 				if (!runepouchPanelOpen)
 				{
-					// Genuine fresh open (was closed, not just switching
-					// between regular/divine pouch view while already open)
-					// — the interface rebuilt from scratch, so any widget
-					// references compact mode cached from a previous session
-					// are stale. Clear them here rather than on every
-					// compact/classic toggle (see RunepouchLoadoutCompactManager's
-					// applyGrid()/restoreNativeLayout() comments).
+					// Fresh open (was closed) — cached widget references are now stale.
 					compactManager.resetTrackedState();
 				}
 				lastRunepouchVarbitValue = varbitValue;
@@ -396,12 +379,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 	{
 		if (config.enableCompactLayout())
 		{
-			// The classic layout's icon overlay lives at fixed child
-			// indices 9/10 on each Load button and isn't cleared by
-			// compactManager.applyGrid() — it only repositions/resizes the
-			// button itself. Hide those explicitly so switching into
-			// compact mode mid-session doesn't leave a stray icon
-			// re-centered on the now-smaller button.
+			// The classic layout's icon overlay (child 9/10) isn't cleared by applyGrid() — hide it explicitly.
 			for (int loadWidgetID : LOAD_INTERFACE_IDS)
 			{
 				var loadButton = client.getWidget(loadWidgetID);
@@ -427,9 +405,7 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			return;
 		}
 
-		// Idempotent (no-op unless compact mode was actually applied this
-		// session) — reverts compact mode's widget geometry/hides so
-		// switching back to classic starts from a clean slate.
+		// Idempotent — reverts compact mode's widget geometry/hides.
 		compactManager.restoreNativeLayout();
 		reloadRunepouchLoadoutSimple();
 	}
