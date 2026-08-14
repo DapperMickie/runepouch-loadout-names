@@ -39,6 +39,28 @@ public interface RunepouchLoadoutNamesConfig extends Config
 			return true;
 	}
 
+	@ConfigItem(
+		position = 2,
+		keyName = "enableCompactLayout",
+		name = "Compact Layout",
+		description = "Show loadouts as a 2-column icon grid with a compact rune display, instead of the classic single-column list. Names/icons are shared between both layouts.",
+		section = sectionSettings
+	)
+	default boolean enableCompactLayout() {
+			return false;
+	}
+
+	@ConfigItem(
+		position = 3,
+		keyName = "hideCompactLoadoutNames",
+		name = "Hide Loadout Names (Compact)",
+		description = "Hide the name text on grid cells when Compact Layout is active. Independent of the classic layout's name settings.",
+		section = sectionSettings
+	)
+	default boolean hideCompactLoadoutNames() {
+			return false;
+	}
+
 	@ConfigSection(
 		position = 1,
 		name = "Deprecated",

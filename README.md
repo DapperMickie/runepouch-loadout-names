@@ -26,3 +26,12 @@ Choose one of many hand-picked icons.
 Add a second icon for multi-purpose loadouts
 
 ![Rune Pouch loadouts layered icons](./docs/layered_icons.png)
+
+
+## Compact Layout
+
+Enable "Compact Layout" in the plugin settings to switch from the classic single-column list to a 2-column icon grid — more loadouts fit on screen at once, with names, icons, and rune contents all shown at a glance.
+
+![Rune Pouch loadouts compact layout](./docs/compact_layout.png)
+
+Names/icons are shared between both layouts, so toggling back and forth never loses or duplicates your data. A separate "Hide Loadout Names (Compact)" setting controls name visibility in this layout independently of the classic layout's own name settings.
