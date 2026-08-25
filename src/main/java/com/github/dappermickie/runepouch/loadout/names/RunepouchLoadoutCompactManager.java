@@ -13,7 +13,6 @@ import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.FontID;
-import net.runelite.api.MenuAction;
 import net.runelite.api.ScriptEvent;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.VarbitID;
@@ -101,6 +100,7 @@ class RunepouchLoadoutCompactManager
 	private final Set<Widget> hiddenVanillaWidgets = new HashSet<>();
 	// First-seen (un-hovered) geometry of the Load button's decorations, which vanilla grows on hover and never shrinks back.
 	private final Map<String, int[]> loadButtonChildGeometry = new HashMap<>();
+	private final Map<Integer, Widget> runeIconOriginals = new HashMap<>();
 	private int originalScrollHeight = -1;
 	private boolean gridApplied;
 	private int currentViewValue;
@@ -370,7 +370,13 @@ class RunepouchLoadoutCompactManager
 		ownedWidgets.clear();
 		hiddenVanillaWidgets.clear();
 		loadButtonChildGeometry.clear();
+		runeIconOriginals.clear();
 		gridApplied = false;
+	}
+
+	Widget getRuneIconOriginal(int widgetId)
+	{
+		return runeIconOriginals.get(widgetId);
 	}
 
 	private void restoreGeometry(int[] widgetIds)
@@ -752,6 +758,7 @@ class RunepouchLoadoutCompactManager
 
 			if (disabledFourthSlot || i >= maxRealSlots)
 			{
+				runeIconOriginals.remove(runeIcon.getId());
 				if (disabledFourthSlot && i < originals.size())
 				{
 					renderGreyedRuneSlot(runeIcon, originals.get(i), runeIconX, runeRowY);
@@ -784,16 +791,7 @@ class RunepouchLoadoutCompactManager
 			runeIcon.setHasListener(true);
 			runeIcon.clearActions();
 			runeIcon.setAction(0, "Change " + Text.removeTags(original.getName()) + runeCapSuffix(slotIndex, i));
-			runeIcon.setOnOpListener((JavaScriptCallback) (ScriptEvent event) ->
-			{
-				if (event.getOp() != 1)
-				{
-					return;
-				}
-
-				client.menuAction(original.getIndex(), original.getId(), MenuAction.CC_OP,
-					1, original.getItemId(), "Change", "");
-			});
+			runeIconOriginals.put(runeIcon.getId(), original);
 			runeIcon.revalidate();
 		}
 	}

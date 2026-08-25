@@ -183,6 +183,17 @@ public class RunepouchLoadoutNamesPlugin extends Plugin
 			setRenameMenuEntry(loadoutIndex + 1, menuEntry);
 			return;
 		}
+
+		if (menuEntry.getIdentifier() == 1) {
+			Widget original = compactManager.getRuneIconOriginal(widgetId);
+			if (original != null) {
+				menuEntry.setParam0(original.getIndex());
+				menuEntry.setParam1(original.getId());
+				menuEntry.setIdentifier(1);
+				menuEntry.setType(MenuAction.CC_OP);
+				menuEntry.setItemId(original.getItemId());
+			}
+		}
 	}
 
 	private void setLoadMenuActions(int loadoutId, MenuEntry[] actions)
