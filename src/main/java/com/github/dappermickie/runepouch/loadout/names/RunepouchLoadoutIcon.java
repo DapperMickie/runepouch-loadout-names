@@ -1,8 +1,9 @@
 package com.github.dappermickie.runepouch.loadout.names;
 
-import net.runelite.api.gameval.SpriteID;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import net.runelite.api.gameval.SpriteID;
 
 public class RunepouchLoadoutIcon {
   public int spriteId;
@@ -73,6 +74,7 @@ public class RunepouchLoadoutIcon {
     new RunepouchLoadoutIcon(SpriteID.Magicon2.TELEOTHER_FALADOR, "Teleother Falador"),
     new RunepouchLoadoutIcon(SpriteID.Magicon2.TELEOTHER_CAMELOT, "Teleother Camelot"),
     new RunepouchLoadoutIcon(SpriteID.Magicon2.TELEPORT_TO_BOUNTY_TARGET, "Teleport to Bounty Target"),
+    new RunepouchLoadoutIcon(SpriteID.Magicon._50, "Teleport to Boat"),
     new RunepouchLoadoutIcon(SpriteID.Magicon.CONFUSE, "Confuse"),
     new RunepouchLoadoutIcon(SpriteID.Magicon.WEAKEN, "Weaken"),
     new RunepouchLoadoutIcon(SpriteID.Magicon.CURSE, "Curse"),
@@ -186,6 +188,7 @@ public class RunepouchLoadoutIcon {
     new RunepouchLoadoutIcon(SpriteID.MagicNecroOn.MASTER_REANIMATION, "Master Reanimation"),
     new RunepouchLoadoutIcon(SpriteID.MagicNecroOn.ARCEUUS_LIBRARY_TELEPORT, "Arceuus Library Teleport"),
     new RunepouchLoadoutIcon(SpriteID.MagicNecroOn.DRAYNOR_MANOR_TELEPORT, "Draynor Manor Teleport"),
+    new RunepouchLoadoutIcon(SpriteID.MagicNecroOn._8, "Battlefront Teleport"),
     new RunepouchLoadoutIcon(SpriteID.MagicNecroOn.SALVE_GRAVEYARD_TELEPORT, "Salve Graveyard Teleport"),
     new RunepouchLoadoutIcon(SpriteID.MagicNecroOn.MIND_ALTAR_TELEPORT, "Mind Altar Teleport"),
     new RunepouchLoadoutIcon(SpriteID.MagicNecroOn.RESPAWN_TELEPORT, "Respawn Teleport"),
@@ -302,6 +305,7 @@ public class RunepouchLoadoutIcon {
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.KRAKEN, "Kraken"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.THERMONUCLEAR_SMOKE_DEVIL, "Thermonuclear Smoke Devil"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.THE_GAUNTLET, "The Gauntlet"),
+    new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.THE_CORRUPTED_GAUNTLET, "The Corrupted Gauntlet"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.ZULRAH, "Zulrah"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.CERBERUS, "Cerberus"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.VORKATH, "Vorkath"),
@@ -314,11 +318,12 @@ public class RunepouchLoadoutIcon {
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.CHAMBERS_OF_XERIC, "Chambers of Xeric"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.THEATRE_OF_BLOOD, "Theatre of Blood"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.NEX, "Nex"),
+    new RunepouchLoadoutIcon(SpriteID.IconBoss25x25._8, "Dagannoth Kings"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.DAGANNOTH_SUPREME, "Dagannoth Supreme"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.DAGANNOTH_REX, "Dagannoth Rex"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.DAGANNOTH_PRIME, "Dagannoth Prime"),
-    new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.THE_CORRUPTED_GAUNTLET, "The Corrupted Gauntlet"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.CHAMBERS_OF_XERIC_CHALLENGE_MODE, "Chambers of Xeric Challenge Mode"),
+    new RunepouchLoadoutIcon(SpriteID.IconBoss25x25._67, "Tombs of Amascut Entry"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.TOMBS_OF_AMASCUT, "Tombs of Amascut"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.TOMBS_OF_AMASCUT_EXPERT, "Tombs of Amascut Expert"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.PHANTOM_MUSPAH, "Phantom Muspah"),
@@ -340,6 +345,9 @@ public class RunepouchLoadoutIcon {
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.SOL_HEREDIT, "Sol Heredit"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.LUNAR_CHESTS, "Lunar Chests"),
     new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.MAGGOT_KING, "Maggot King"),
+    new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.SHELLBANE_GRYPHON, "Shellbane Gryphon"),
+    new RunepouchLoadoutIcon(SpriteID.IconBoss25x25.BRUTUS, "Brutus"),
+    new RunepouchLoadoutIcon(SpriteID.IconBoss25x25._65, "Gemstone Crab"),
 
     new RunepouchLoadoutIcon(SpriteID.Staticons.ATTACK, "Attack"),
     new RunepouchLoadoutIcon(SpriteID.Staticons.STRENGTH, "Strength"),
@@ -359,6 +367,12 @@ public class RunepouchLoadoutIcon {
     new RunepouchLoadoutIcon(SpriteID.Staticons.COOKING, "Cooking"),
     new RunepouchLoadoutIcon(SpriteID.Staticons.FIREMAKING, "Firemaking"),
     new RunepouchLoadoutIcon(SpriteID.Staticons.WOODCUTTING, "Woodcutting"),
+    new RunepouchLoadoutIcon(SpriteID.Staticons2.RUNECRAFT, "Runecraft"),
+    new RunepouchLoadoutIcon(SpriteID.Staticons2.CONSTRUCTION, "Construction"),
+    new RunepouchLoadoutIcon(SpriteID.Staticons2.FARMING, "Farming"),
+    new RunepouchLoadoutIcon(SpriteID.Staticons2.HUNTER, "Hunter"),
+    new RunepouchLoadoutIcon(SpriteID.Staticons2.SLAYER, "Slayer"),
+    new RunepouchLoadoutIcon(SpriteID.Staticons2.SAILING, "Sailing"),
 
     new RunepouchLoadoutIcon(SpriteID.ClanRankIcons._0, "Clan Rank 0"),
     new RunepouchLoadoutIcon(SpriteID.ClanRankIcons._1, "Clan Rank 1"),
